@@ -71,7 +71,7 @@ class GovernorateCoreListView(APIView):
         # print(governorates)
         serializer = GovernorateSerializer(governorates, many=True)
 
-        return Response({"governorates": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GovernorateView(APIView):
@@ -106,7 +106,7 @@ class LandmarkListView(APIView):
         # print(governorates)
         serializer = LandmarksSerializer(landmarks, many=True)
 
-        return Response({"landmarks": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LandmarkView(APIView):
@@ -135,7 +135,7 @@ class LandmarkCoreListView(APIView):
         # print(governorates)
         serializer = LandmarkSerializer(landmarks, many=True)
 
-        return Response({"landmarks": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         mainserializer = LandmarkSerializer(data=request.data)
@@ -165,9 +165,9 @@ class LandmarkCoreListView(APIView):
                     landmarklangVersionsErrors.append(serializer.errors)
 
             if len(landmarklangVersionsErrors) > 0:
-                return Response({f'landmark #{landmark.id}': landmarklangVersionsErrors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({f'landmark #{landmark.id}': landmarklangVersions}, status=status.HTTP_201_CREATED)
+                return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
 
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -187,7 +187,7 @@ class LandmarkEventListView(APIView):
         # print(events)
         serializer = EventsSerializer(lang_events, many=True)
 
-        return Response({f"Landmark #{landmark.id} events": serializer.data}, status=status.HTTP_200_OK)
+        return Response( serializer.data, status=status.HTTP_200_OK)
 
 
 class LandmarkEventView(APIView):
@@ -216,7 +216,7 @@ class LandmarkEventCoreListView(APIView):
         # print(governorates)
         serializer = EventSerializer(events, many=True)
 
-        return Response({"Landmark events": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         mainserializer = EventSerializer(data=request.data)
@@ -245,9 +245,9 @@ class LandmarkEventCoreListView(APIView):
                     eventlangVersionsErrors.append(serializer.errors)
 
             if len(eventlangVersionsErrors) > 0:
-                return Response({f'event #{event.id}': eventlangVersionsErrors}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(eventlangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
             else:
-                return Response({f'event #{event.id}': eventlangVersions}, status=status.HTTP_201_CREATED)
+                return Response(eventlangVersions, status=status.HTTP_201_CREATED)
 
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
