@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import dj_database_url
 from pathlib import Path
 import os
 from datetime import timedelta
@@ -145,6 +146,12 @@ DATABASES = {
         'HOST': env("DB_HOST"),
         'PORT': env("DB_PORT"),
     }
+}
+
+
+# deploy postgres database to live server
+DATABASES = {
+    'default': dj_database_url.parse(env('DB_URL'))
 }
 
 
