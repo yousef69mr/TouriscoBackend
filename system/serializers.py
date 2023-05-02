@@ -10,7 +10,7 @@ from .models import (
     LandmarkEvent,
     LandmarkEventLanguageBased
 )
-from backend.utils import translate_django_model
+from TouriscoBackend.utils import translate_django_model
 
 
 class LanguageSerializer(serializers.ModelSerializer):
