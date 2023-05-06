@@ -58,6 +58,11 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
     'system.apps.SystemConfig',
+    'tourism_categories.apps.TourismCategoriesConfig',
+    'landmarks.apps.LandmarksConfig',
+    'landmark_events.apps.LandmarkEventsConfig',
+    'governorates.apps.GovernoratesConfig',
+    'tickets.apps.TicketsConfig',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
@@ -159,10 +164,10 @@ DATABASES = {
 }
 
 
-# deploy postgres database to live server
-DATABASES = {
-    'default': dj_database_url.parse(env('DB_URL'))
-}
+# # deploy postgres database to live server
+# DATABASES = {
+#     'default': dj_database_url.parse(env('DB_URL'))
+# }
 
 
 
