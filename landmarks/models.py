@@ -23,7 +23,7 @@ class Landmark(models.Model):
         upload_to=LandmarkImagesPath)
     tourismCategoryObject = models.ForeignKey(TourismCategory,on_delete=models.CASCADE)
     area = models.FloatField(help_text="Squared Area in metre")
-    location = models.CharField(max_length=200, help_text="google maps link ")
+    location = models.TextField( help_text="google maps link ")
     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
     height = models.FloatField(default=1, help_text="height in metre")
     foundationDate = models.DateField(
