@@ -10,11 +10,15 @@ def TourismCategoryImagesPath(instance, filename):
 
 class TourismCategory(models.Model):
     name = models.CharField(default='', max_length=30, unique=True)
-    image = models.ImageField(upload_to=TourismCategoryImagesPath)
+    image = models.ImageField(default='defaults/tourism_category_default.jpg', upload_to=TourismCategoryImagesPath)
 
     created = models.DateTimeField(
         default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True, blank=False)
+
+    class Meta:
+        verbose_name = 'TourismCategory'
+        # plural_name = 'TourismCategories'
 
     def __str__(self):
         return f'{self.name}'

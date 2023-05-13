@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
 
+import copy
 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -91,18 +92,23 @@ class LandmarkCoreListView(APIView):
 
             landmark = get_object_or_404(
                 Landmark, id=mainserializer.data.get("id"))
+            # landmark = get_object_or_404(
+            #     Landmark, id=17)
 
             # print(event, "\n\n\n")
             languages = Language.objects.all()
-
-            request.data['landmarkObject'] = landmark.id
-
+            request.data.pop('image', None)
+            request_data_copy = request.data.copy()
+            # print(request_data_copy)
+            # request_data_copy['image']=request.data['image']
+            request_data_copy['landmarkObject'] = landmark.id
+            # print(request_data_copy)
             landmarklangVersions = []
             landmarklangVersionsErrors = []
             for language in languages:
-                request.data['lang'] = language.id
+                request_data_copy['lang'] = language.id
                 # print(request.data, "\n\n")
-                serializer = LandmarksSerializer(data=request.data)
+                serializer = LandmarksSerializer(data=request_data_copy)
 
                 if serializer.is_valid():
                     serializer.save()

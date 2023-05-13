@@ -2,15 +2,24 @@ from rest_framework import serializers
 from .models import LandmarkEvent,LandmarkEventLanguageBased
 from system.serializers import LanguageSerializer
 from TouriscoBackend.utils import translate_django_model
+from landmarks.serializers import LandmarkSerializer
 
 # main model
 
 
 class EventSerializer(serializers.ModelSerializer):
+    landmark = LandmarkSerializer(source='landmarkObject',read_only=True)
     class Meta:
         model = LandmarkEvent
         fields = '__all__'
 
+    # def create(self, validated_data):
+    #     # print(validated_data,"\n\n\n\n")
+    #     landmark = validated_data.pop('landmarkObject', None)
+    #     instance = LandmarkEvent.objects.create(
+    #         landmarkObject=landmark, **validated_data)
+
+    #     return instance
 
 # language based model
 class EventsSerializer(serializers.ModelSerializer):

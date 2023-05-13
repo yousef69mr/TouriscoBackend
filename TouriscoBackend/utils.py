@@ -1,5 +1,25 @@
 from googletrans import Translator
 
+from django.db import models
+
+class TranslatableModelManager(models.Manager):
+    def create(self, **kwargs):
+        translatable_fields = [field.name for field in self.model._meta.fields if isinstance(field, models.CharField)]
+        translator = Translator()
+        for field_name in translatable_fields:
+            if field_name in kwargs and kwargs[field_name]:
+                kwargs[field_name] = translator.translate(kwargs[field_name]).text
+        return super().create(**kwargs)
+
+    def save(self, *args, **kwargs):
+        translatable_fields = [field.name for field in self.model._meta.fields if isinstance(field, models.CharField)]
+        translator = Translator()
+        for obj in self.all():
+            for field_name in translatable_fields:
+                if getattr(obj, field_name):
+                    setattr(obj, field_name, translator.translate(getattr(obj, field_name)).text)
+            obj.save()
+
 
 def get_all_string_attributes_in_Django_model(model):
     """
@@ -42,36 +62,47 @@ def get_all_string_attributes_in_Django_model(model):
 #     # translated_model = translator.translate("model", dest=language)
 #     return translated_model
 
-def translate_django_model(model, language):
-    """
-    Translates each attribute in a specific Django model into another language using googletrans.
+# def translate_django_model(model, language):
+#     """
+#     Translates each attribute in a specific Django model into another language using googletrans.
 
-    Parameters:
-    model (Django Model): The Django model to be translated.
-    language (str): The language to translate the model into.
+#     Parameters:
+#     model (Django Model): The Django model to be translated.
+#     language (str): The language to translate the model into.
 
-    Returns:
-    model (Django Model): The translated Django model.
-    """
+#     Returns:
+#     model (Django Model): The translated Django model.
+#     """
+#     translator = Translator()
+#     # print(model)
+#     fields = get_all_string_attributes_in_Django_model(model)
+#     print("/********************************/")
+#     print(fields, language)
+
+#     for field in fields:
+#         # print("########")
+#         if field != 'id':
+#             # print(type(getattr(model, field)))
+
+#             translated_field = translator.translate(
+#                 str(getattr(model, field, None)).strip(), dest=language).text
+
+#             setattr(model, field, translated_field)
+#             # print(field, getattr(model, field))
+#     # print("/********************************/")
+#     return model
+
+def translate_django_model(model_instance, target_language):
     translator = Translator()
-    # print(model)
-    fields = get_all_string_attributes_in_Django_model(model)
-    # print("/********************************/")
-    # print(fields, language)
 
-    for field in fields:
-        # print("########")
-        if field != 'id':
-            # print(type(getattr(model, field)))
-
-            translated_field = translator.translate(
-                str(getattr(model, field, None)).strip(), dest=language).text
-
-            setattr(model, field, translated_field)
-            # print(field, getattr(model, field))
-    # print("/********************************/")
-    return model
-
+    for field in model_instance._meta.fields:
+        if isinstance(field, models.CharField) or isinstance(field, models.TextField):
+            print(field)
+            value = getattr(model_instance, field.name)
+            if value:
+                translated_value = translator.translate(value, dest=target_language).text
+                setattr(model_instance, field.name, translated_value if translated_value else '')
+    return model_instance
 
 def return_django_models_except(models_to_exclude):
     """

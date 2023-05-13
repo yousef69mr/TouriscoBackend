@@ -31,7 +31,7 @@ class allUsersAdmin(UserAdmin):
         }),
         ('Permissions', {
             'classes': ('wide',),
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified')
+            'fields': ('groups','is_active', 'is_staff', 'is_superuser', 'is_verified')
         }),
         ('Important Dates', {
             'classes': ('wide',),

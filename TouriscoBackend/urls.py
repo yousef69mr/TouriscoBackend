@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/', include('governorates.urls')),
     path('api/', include('landmarks.urls')),
     path('api/', include('landmark_events.urls')),
+    path('api/', include('tourism_categories.urls')),
     path('api/', include('tickets.urls')),
     path('api/', include('users.urls')),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),

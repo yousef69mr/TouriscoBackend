@@ -1,0 +1,2 @@
+"id","is_superuser","profile_image","username","email","password","raw_password","phone","gender","nationality","is_staff","is_active","date_joined","last_login","is_verified"
+1,True,"defaults/avatar.svg","super_admin","admin@admin.com","pbkdf2_sha256$390000$u6O3XQd5BfGDpOlRmFp3wm$edNJVl9R6qYCOfCpVjMRV1wshSxmb07ANETtlTMOv7k=","admin","+201095702620","male","EG",True,True,"2023-05-07 00:26:26.11525+02","2023-05-07 00:26:46.339425+02",True

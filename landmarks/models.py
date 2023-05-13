@@ -19,7 +19,7 @@ ERAS = (
 
 class Landmark(models.Model):
     name = models.CharField(default='', max_length=40, unique=True)
-    image = models.ImageField(
+    image = models.ImageField(default='defaults/landmark_default.jpg',
         upload_to=LandmarkImagesPath)
     tourismCategoryObject = models.ForeignKey(TourismCategory,on_delete=models.CASCADE)
     area = models.FloatField(help_text="Squared Area in metre")
@@ -32,7 +32,7 @@ class Landmark(models.Model):
         choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
     created = models.DateTimeField(
         default=timezone.now, verbose_name="Creation Date")
-    active = models.BooleanField(default=True, blank=False)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
@@ -52,7 +52,7 @@ class LandmarkLanguageBased(models.Model):
 
     created = models.DateTimeField(
         default=timezone.now, verbose_name="Creation Date")
-    active = models.BooleanField(default=True, blank=False)
+    active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['id']

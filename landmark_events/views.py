@@ -25,7 +25,7 @@ from landmarks.serializers import LandmarksSerializer
 
 
 class LandmarkEventListView(APIView):
-    lookup_field = ['lang_code', 'landmark_id']
+    # lookup_field = ['lang_code', 'landmark_id']
 
     # get events for specfic landmark
     def get(self, request, lang_code, landmark_id, format=None):
@@ -34,14 +34,13 @@ class LandmarkEventListView(APIView):
         landmark = get_object_or_404(Landmark, id=landmark_id)
         # events = LandmarkEvent.objects.filter(
         #     landmarkObject=landmark).only('id').all()
-        lang_events = get_list_or_404(
-            LandmarkEventLanguageBased, lang=language, eventObject__landmarkObject=landmark)
+        lang_events = LandmarkEventLanguageBased.objects.filter(lang=language, eventObject__landmarkObject=landmark)
         # print(events)
         serializer = EventsSerializer(lang_events, many=True)
 
-        return Response( serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+# single Event
 class LandmarkEventView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
     # serializer_class = LandmarksSerializer
@@ -59,7 +58,7 @@ class LandmarkEventView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+# get all landmark events core 
 class LandmarkEventCoreListView(APIView):
 
     def get(self, request, format=None):
@@ -71,6 +70,7 @@ class LandmarkEventCoreListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
+        print(request.data)
         mainserializer = EventSerializer(data=request.data)
 
         if mainserializer.is_valid():
@@ -81,14 +81,15 @@ class LandmarkEventCoreListView(APIView):
             # print(event, "\n\n\n")
             languages = Language.objects.all()
 
-            request.data['eventObject'] = event.id
+            request_data_copy = request.data.copy()
+            request_data_copy['eventObject'] = event.id
 
             eventlangVersions = []
             eventlangVersionsErrors = []
             for language in languages:
-                request.data['lang'] = language.id
+                request_data_copy['lang'] = language.id
                 # print(request.data, "\n\n")
-                serializer = EventsSerializer(data=request.data)
+                serializer = EventsSerializer(data=request_data_copy)
 
                 if serializer.is_valid():
                     serializer.save()
