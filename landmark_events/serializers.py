@@ -11,7 +11,13 @@ class EventSerializer(serializers.ModelSerializer):
     landmark = LandmarkSerializer(source='landmarkObject',read_only=True)
     class Meta:
         model = LandmarkEvent
+        # fields = ('id','name','','landmarkObject','isMain','created','active')
         fields = '__all__'
+
+        extra_kwargs = {
+            # 'url': {'lookup_field': 'lang_code'}
+            'landmarkObject': {'write_only': True},
+        }
 
     # def create(self, validated_data):
     #     # print(validated_data,"\n\n\n\n")
@@ -30,8 +36,13 @@ class EventsSerializer(serializers.ModelSerializer):
     class Meta:
         model = LandmarkEventLanguageBased
 
-        fields = ('id', 'eventObject', 'lang', 'event',
-                  'language', 'title', 'active')
+        fields = '__all__'
+        
+        extra_kwargs = {
+            # 'url': {'lookup_field': 'lang_code'}
+            'eventObject': {'write_only': True},
+            'lang': {'write_only': True}
+        }
 
     def create(self, validated_data):
         # print(validated_data)

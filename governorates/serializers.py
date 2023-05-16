@@ -12,13 +12,12 @@ class GovernorateSerializer(serializers.ModelSerializer):
 
 # language based model
 class GovernoratesSerializer(serializers.ModelSerializer):
-    governorate = GovernorateSerializer(source='govObject')
-    language = LanguageSerializer(source='lang')
+    governorate = GovernorateSerializer(source='govObject',read_only=True)
+    language = LanguageSerializer(source='lang',read_only=True)
 
     class Meta:
         model = GovernorateLanguageBased
-        fields = ('id', 'governorate', 'language','lang','govObject',
-                  'title', 'governor', 'description', 'active', 'created')
+        fields = '__all__'
         # lookup_field = 'lang_code'
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}

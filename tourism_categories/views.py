@@ -79,29 +79,34 @@ class TourismCategoriesCoreListView(APIView):
             #     TourismCategory, id=7)
 
             # print(category, "\n\n\n")
-            languages = Language.objects.all()
+            try:
+                languages = Language.objects.all()
 
-            request_data_copy = request.data.copy()
+                request_data_copy = request.data.copy()
 
-            request_data_copy['categoryObject'] = category.id
-            # print(request_data_copy)
-            categorylangVersions = []
-            categorylangVersionsErrors = []
-            for language in languages:
-                request_data_copy['lang'] = language.id
-                # print(request.data, "\n\n")
-                serializer = TourismCategoriesSerializer(data=request_data_copy)
+                request_data_copy['categoryObject'] = category.id
+                # print(request_data_copy)
+                categorylangVersions = []
+                categorylangVersionsErrors = []
+                for language in languages:
+                    request_data_copy['lang'] = language.id
+                    # print(request.data, "\n\n")
+                    serializer = TourismCategoriesSerializer(data=request_data_copy)
 
-                if serializer.is_valid():
-                    serializer.save()
-                    categorylangVersions.append(serializer.data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        categorylangVersions.append(serializer.data)
+                    else:
+                        categorylangVersionsErrors.append(serializer.errors)
+
+                if len(categorylangVersionsErrors) > 0:
+                    category.delete()
+                    return Response(categorylangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    categorylangVersionsErrors.append(serializer.errors)
-
-            if len(categorylangVersionsErrors) > 0:
-                return Response(categorylangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(categorylangVersions, status=status.HTTP_201_CREATED)
+                    return Response(categorylangVersions, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                category.delete()
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

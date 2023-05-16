@@ -17,8 +17,8 @@ class TourismCategory(models.Model):
     active = models.BooleanField(default=True, blank=False)
 
     class Meta:
-        verbose_name = 'TourismCategory'
-        # plural_name = 'TourismCategories'
+        verbose_name = 'Tourism Category'
+        verbose_name_plural = 'Tourism Categories'
 
     def __str__(self):
         return f'{self.name}'

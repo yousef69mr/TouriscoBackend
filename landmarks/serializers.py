@@ -42,6 +42,10 @@ class LandmarkSerializer(serializers.ModelSerializer):
         model = Landmark
         fields = '__all__'
 
+        extra_kwargs = {
+                # 'url': {'lookup_field': 'lang_code'}
+                'govObject': {'write_only': True}
+            }
     def create(self, validated_data):
         # print(validated_data,"\n\n\n\n")
         governorate = validated_data.pop('govObject', None)
@@ -49,7 +53,14 @@ class LandmarkSerializer(serializers.ModelSerializer):
             govObject=governorate, **validated_data)
 
         return instance
-
+    
+    # def to_representation(self, instance):
+    #     return {
+    #         'name': instance.name,
+    #         'area': instance.area,
+    #         'governorate': GovernorateSerializer(instance.govObject).data
+    #     }
+    
 
 class LandmarksSerializer(serializers.ModelSerializer):
     landmark = LandmarkSerializer(source='landmarkObject', read_only=True)
@@ -58,8 +69,7 @@ class LandmarksSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LandmarkLanguageBased
-        fields = ('id',  'title', 'founder', 'landmarkObject', 'landmark',
-                  'lang', 'language', 'address', 'description','created','active')
+        fields = '__all__'
         # lookup_field = 'lang_code'
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}
@@ -68,7 +78,7 @@ class LandmarksSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # print(validated_data)
+        print(validated_data)
         landmark = validated_data.pop('landmarkObject', None)
         language = validated_data.pop('lang', None)
 
@@ -78,6 +88,14 @@ class LandmarksSerializer(serializers.ModelSerializer):
         translatedInstance = translate_django_model(
             instance, instance.lang.code.lower())
 
-        # print(translatedInstance)
+        print(translatedInstance)
         translatedInstance.save()
         return translatedInstance
+    
+    # def to_representation(self, instance):
+    #     return{
+    #         'id': instance.id,
+    #         'landmark': LandmarkSerializer(instance.landmarkObject).data,
+    #         'language': LanguageSerializer(instance.lang).data,
+
+    #     }

@@ -11,11 +11,12 @@ class LandmarkEvent(models.Model):
     name = models.CharField(default='', max_length=40, unique=True)
     landmarkObject = models.ForeignKey(
         Landmark, on_delete=models.CASCADE, verbose_name="landmark")
-    created = models.DateTimeField(
-        default=timezone.now, verbose_name="Creation Date")
+    
     isMain = models.BooleanField(default=False, verbose_name="Main")
     openTime = models.TimeField()
     closeTime = models.TimeField()
+    created = models.DateTimeField(
+        default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True, blank=False)
 
     def __str__(self):

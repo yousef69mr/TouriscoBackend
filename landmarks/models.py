@@ -17,8 +17,43 @@ ERAS = (
 )
 
 
+# class Landmark(models.Model):
+#     name = models.CharField(default='', max_length=100, unique=True)
+#     image = models.ImageField(default='defaults/landmark_default.jpg',
+#         upload_to=LandmarkImagesPath)
+#     tourismCategoryObject = models.ManyToManyField(TourismCategory,through='LandmarkWithTourismCategoryList')
+#     area = models.FloatField(help_text="Squared Area in metre")
+#     location = models.TextField( help_text="google maps link ")
+#     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
+#     height = models.FloatField(default=1, help_text="height in metre")
+#     foundationDate = models.DateField(
+#         default=timezone.now, verbose_name="Foundation Date")
+#     foundationDateEra = models.CharField(
+#         choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
+#     created = models.DateTimeField(
+#         default=timezone.now, verbose_name="Creation Date")
+#     active = models.BooleanField(default=True)
+
+#     def __str__(self):
+#         return self.name
+    
+
+# class LandmarkWithTourismCategoryList(models.Model):
+#     landmarkObject = models.ForeignKey(
+#         Landmark, on_delete=models.CASCADE, verbose_name="landmark")
+#     categoryObject = models.ForeignKey(
+#         TourismCategory, on_delete=models.CASCADE, verbose_name="core")
+#     created = models.DateTimeField(
+#         default=timezone.now, verbose_name="Creation Date")
+#     active = models.BooleanField(default=True)
+
+#     def __str__(self):
+#         return f'{self.landmarkObject.name} == {self.categoryObject.name}'
+
+
+
 class Landmark(models.Model):
-    name = models.CharField(default='', max_length=40, unique=True)
+    name = models.CharField(default='', max_length=100, unique=True)
     image = models.ImageField(default='defaults/landmark_default.jpg',
         upload_to=LandmarkImagesPath)
     tourismCategoryObject = models.ForeignKey(TourismCategory,on_delete=models.CASCADE)

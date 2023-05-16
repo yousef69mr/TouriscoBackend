@@ -83,43 +83,96 @@ class LandmarkCoreListView(APIView):
         serializer = LandmarkSerializer(landmarks, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+        
     def post(self, request, format=None):
         mainserializer = LandmarkSerializer(data=request.data)
 
         if mainserializer.is_valid():
             mainserializer.save()
+            print('\n\n\ni\n\n\n')
 
             landmark = get_object_or_404(
                 Landmark, id=mainserializer.data.get("id"))
+            # print(landmark)
             # landmark = get_object_or_404(
             #     Landmark, id=17)
 
             # print(event, "\n\n\n")
-            languages = Language.objects.all()
-            request.data.pop('image', None)
-            request_data_copy = request.data.copy()
-            # print(request_data_copy)
-            # request_data_copy['image']=request.data['image']
-            request_data_copy['landmarkObject'] = landmark.id
-            # print(request_data_copy)
-            landmarklangVersions = []
-            landmarklangVersionsErrors = []
-            for language in languages:
-                request_data_copy['lang'] = language.id
-                # print(request.data, "\n\n")
-                serializer = LandmarksSerializer(data=request_data_copy)
+            try:
+                languages = Language.objects.all()
+                # request_data_copy.pop('image')
+                request.data.pop('image')
+                request_data_copy = request.data.copy()
+                # print(request_data_copy)
+                # request_data_copy['image']=request.data['image']
+                request_data_copy['landmarkObject'] = landmark.id
+                # print(request_data_copy)
+                landmarklangVersions = []
+                landmarklangVersionsErrors = []
+                for language in languages:
+                    request_data_copy['lang'] = language.id
+                    # print(request.data, "\n\n")
+                    serializer = LandmarksSerializer(data=request_data_copy)
 
-                if serializer.is_valid():
-                    serializer.save()
-                    landmarklangVersions.append(serializer.data)
+                    if serializer.is_valid():
+                        serializer.save()
+                        landmarklangVersions.append(serializer.data)
+                    else:
+                        landmarklangVersionsErrors.append(serializer.errors)
+
+                if len(landmarklangVersionsErrors) > 0:
+                    landmark.delete()
+                    return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    landmarklangVersionsErrors.append(serializer.errors)
-
-            if len(landmarklangVersionsErrors) > 0:
-                return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
-
+                    return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                landmark.delete()
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # def post(self, request, format=None):
+    #     mainserializer = LandmarkSerializer(data=request.data)
+
+    #     if mainserializer.is_valid():
+    #         mainserializer.save()
+
+    #         landmark = get_object_or_404(
+    #             Landmark, id=mainserializer.data.get("id"))
+    #         # landmark = get_object_or_404(
+    #         #     Landmark, id=17)
+
+    #         print(landmark, "\n\n\n")
+    #         # request.data.pop('image', None)
+    #         try:
+    #             languages = Language.objects.all()
+                
+    #             request_data_copy = request.data.copy()
+    #             request_data_copy.pop('image')
+    #             # print(request_data_copy)
+    #             # request_data_copy['image']=request.data['image']
+    #             request_data_copy['landmarkObject'] = landmark.id
+    #             # print(request_data_copy)
+    #             landmarklangVersions = []
+    #             landmarklangVersionsErrors = []
+    #             for language in languages:
+    #                 request_data_copy['lang'] = language.id
+    #                 print(request.data, "\n\n")
+    #                 serializer = LandmarksSerializer(data=request_data_copy)
+
+    #                 if serializer.is_valid():
+    #                     serializer.save()
+    #                     landmarklangVersions.append(serializer.data)
+    #                 else:
+    #                     landmarklangVersionsErrors.append(serializer.errors)
+
+    #             if len(landmarklangVersionsErrors) > 0:
+    #                 landmark.delete()
+    #                 return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
+    #             else:
+    #                 return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
+    #         except Exception as e:
+    #             landmark.delete()
+    #             return Response(e, status=status.HTTP_400_BAD_REQUEST)
+
+    #     return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

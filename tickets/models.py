@@ -5,15 +5,15 @@ from system.models import Language
 # Create your models here.
 
 TICKETS_CATEGORIES = (
-    ('foreginer', 'Foreginer'),
-    ('foreginerStudent', 'Foreginer Student'),
+    ('foreigner', 'Foreigner'),
+    ('foreigner student', 'foreigner Student'),
     ('egyptian', 'Egyptian'),
     ('arab', 'Arab'),
     ('student', 'Student'),
-    ('أجنبى', 'أجنبى'),
-    ('طالب_أجنبى', 'طالب أجنبى'),
-    ('مصرى', 'مصرى'),
-    ('عربى', 'عربى'),
+    ('أجنبي', 'أجنبى'),
+    ('طالب أجنبي', 'طالب أجنبى'),
+    ('مصري', 'مصرى'),
+    ('عرب', 'عربى'),
     ('طالب', 'طالب')
 )
 

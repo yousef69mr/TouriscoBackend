@@ -19,7 +19,7 @@ class TicketLanguageBasedAdmin(admin.ModelAdmin):
     ordering = ['id']
     list_display = ['id', 'title', 'lang', 'category', 'created', 'active']
     list_display_links = ['id', 'title', 'lang', 'created']
-    list_filter = ['created', 'lang', 'category', 'active']
+    list_filter = ['created', 'lang', 'active']
 
 
 admin.site.register(TicketLanguageBased, TicketLanguageBasedAdmin)

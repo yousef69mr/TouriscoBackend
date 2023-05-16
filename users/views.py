@@ -33,7 +33,3 @@ class CreateUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserView(APIView):
-
-    def get(self, request):
-        pass
