@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from users.serializers import UserSerializer
-from nudenet import NudeDetector
+# from nudenet import NudeDetector
 from .models import (
     Language,
     Image
@@ -16,7 +16,7 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(source='userObject',read_only=True)
+    user = UserSerializer(source='userObject',read_only=True)
     class Meta:
         model = Image
         fields = '__all__'
