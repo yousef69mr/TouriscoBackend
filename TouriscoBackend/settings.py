@@ -77,7 +77,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.TokenAuthentication',   
+        'rest_framework.authentication.TokenAuthentication',
+           
     )
 }
 
@@ -169,10 +170,10 @@ DATABASES = {
 }
 
 
-# # deploy postgres database to live server
-# DATABASES = {
-#     'default': dj_database_url.parse(env('DB_URL'))
-# }
+# deploy postgres database to live server
+DATABASES = {
+    'default': dj_database_url.parse(env('DB_URL'))
+}
 
 
 
