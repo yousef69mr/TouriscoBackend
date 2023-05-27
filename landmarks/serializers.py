@@ -1,38 +1,9 @@
 from rest_framework import serializers
-from django.utils import timezone
-from .models import Landmark,LandmarkLanguageBased
+# from django.utils import timezone
+from .models import Landmark,LandmarkLanguageBased,LandmarkImage,LandmarkReview
 from governorates.serializers import GovernorateSerializer
 from system.serializers import LanguageSerializer
 from TouriscoBackend.utils import translate_django_model
-
-
-
-class CustomDateField(serializers.ReadOnlyField):
-    """
-    Custom read-only field to handle timezone issues explicitly.
-    """
-    def to_representation(self, value):
-        """
-        Convert the datetime object to a date object and
-        handle timezone issues in a different way.
-        """
-        if value is None:
-            return None
-        if isinstance(value, str):
-            value = timezone.datetime.fromisoformat(value)
-
-        # Convert the datetime object to a date object.
-        date_obj = value.date()
-
-        # Handle timezone issues in a different way.
-        if self.context.get('request') is not None:
-            tz = timezone.get_current_timezone()
-            if value.tzinfo is not None:
-                date_obj = value.astimezone(tz).date()
-            else:
-                date_obj = timezone.make_aware(value, tz).date()
-
-        return date_obj
 
 
 class LandmarkSerializer(serializers.ModelSerializer):
@@ -41,17 +12,22 @@ class LandmarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = Landmark
         fields = '__all__'
-
+        read_only_fields = ['id']
         extra_kwargs = {
                 # 'url': {'lookup_field': 'lang_code'}
                 'govObject': {'write_only': True}
             }
+        
     def create(self, validated_data):
         # print(validated_data,"\n\n\n\n")
         governorate = validated_data.pop('govObject', None)
-        instance = Landmark.objects.create(
-            govObject=governorate, **validated_data)
-
+        # user = validated_data.pop()
+        instance = Landmark.objects.create(govObject=governorate, **validated_data)
+        user = validated_data.pop('user_created_by',None)
+        
+        if user.is_superuser:
+            instance.active = True
+        instance.save()
         return instance
     
     # def to_representation(self, instance):
@@ -71,6 +47,7 @@ class LandmarksSerializer(serializers.ModelSerializer):
         model = LandmarkLanguageBased
         fields = '__all__'
         # lookup_field = 'lang_code'
+        read_only_fields = ['id','active']
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}
             'landmarkObject': {'write_only': True},
@@ -78,7 +55,7 @@ class LandmarksSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        print(validated_data)
+        # print(validated_data)
         landmark = validated_data.pop('landmarkObject', None)
         language = validated_data.pop('lang', None)
 
@@ -88,7 +65,7 @@ class LandmarksSerializer(serializers.ModelSerializer):
         translatedInstance = translate_django_model(
             instance, instance.lang.code.lower())
 
-        print(translatedInstance)
+        # print(translatedInstance)
         translatedInstance.save()
         return translatedInstance
     
@@ -99,3 +76,16 @@ class LandmarksSerializer(serializers.ModelSerializer):
     #         'language': LanguageSerializer(instance.lang).data,
 
     #     }
+
+class LandmarkImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandmarkImage
+        fields = '__all__'
+        read_only_fields = ['id','active']
+        
+
+class LandmarkReviewsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LandmarkReview
+        fields = '__all__'
+        read_only_fields = ['id','active']

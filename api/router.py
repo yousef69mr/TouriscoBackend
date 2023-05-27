@@ -9,4 +9,5 @@ from users.views import UsersView
 router = routers.DefaultRouter()
 router.register(r'languages', LanguageView, 'language')
 router.register(r'users', UsersView, 'user')
+# router.register(r'images',ImageListView,'image')
 # router.registry.extend(system_router.registry)

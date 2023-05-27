@@ -28,5 +28,6 @@ urlpatterns = [
     path('api/', include('tourism_categories.urls')),
     path('api/', include('tickets.urls')),
     path('api/', include('users.urls')),
+    path('api/', include('reviews.urls')),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

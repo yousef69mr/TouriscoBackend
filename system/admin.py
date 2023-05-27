@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Language,
+    Image
 #     Governorate,
 #     GovernorateLanguageBased,
 #     Landmark,
@@ -26,5 +27,10 @@ class LanguageAdmin(admin.ModelAdmin):
 admin.site.register(Language, LanguageAdmin)
 
 
-
-
+class ImageAdmin(admin.ModelAdmin):
+    model = Image
+    ordering = ['id']
+    list_display = ['id','image', 'created', 'active']
+    list_display_links = ['id' , 'created']
+    list_filter = ['created', 'active']
+admin.site.register(Image,ImageAdmin)

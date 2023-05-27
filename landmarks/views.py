@@ -1,9 +1,14 @@
 
 from rest_framework import status
 from rest_framework.views import APIView
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
+from django.http import QueryDict
 
-import copy
+from django.contrib.contenttypes.models import ContentType
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
+from system.serializers import ImageSerializer
+from system.models import Image
+from reviews.serializers import ReviewSerializer
+from reviews.models import Review
 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -11,7 +16,8 @@ from django.shortcuts import get_object_or_404
 from .serializers import (
     LandmarkSerializer,
     LandmarksSerializer,
-   
+    LandmarkImagesSerializer,
+    LandmarkReviewsSerializer
 )
 from .models import (
     Language,
@@ -20,8 +26,120 @@ from .models import (
 )
 
 # Create your views here.
+class LandmarkReviewsView(APIView):
+    
+    permission_classes=[IsAuthenticatedOrReadOnly]
 
 
+    def get(self, request, landmark_id):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        reviews = landmark.reviews.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def post(self, request, landmark_id):
+        try:
+            landmark = get_object_or_404(Landmark,id=landmark_id)
+            
+            # print(landmark)
+            # image_list= request.data.pop('image_list',None)
+            request_data_copy = request.data.copy()
+            request_data_copy['user'] = request.user.id
+            # request_data_copy['content_object'] = landmark
+            # print("request_data_copy")
+            request_data_copy['content_type'] = ContentType.objects.get_for_model(Landmark).id
+            request_data_copy['object_id'] = landmark.id
+            review_response =[]
+            error_list = []
+            
+            # print(request_data_copy)
+            serializer = ReviewSerializer(data=request_data_copy)
+            print('here')
+            if serializer.is_valid():
+                serializer.save()
+                review = get_object_or_404(Review,id=serializer.data.get('id'))
+                # image.contains_nudity = contains_nudity
+                # print(image)
+                data = QueryDict(mutable=True)
+                data['landmark'] = landmark.id
+                data['review'] = review.id
+                print(data)
+                landmarkReviewSerializer = LandmarkReviewsSerializer(data=data)
+                if landmarkReviewSerializer.is_valid():
+                    landmarkReviewSerializer.save()
+                    review_response.append(serializer.data)
+                # serialized_data = serializer.data
+                else:
+                    error_list.append(landmarkReviewSerializer.errors)
+                    review.delete()
+            else:
+                error_list.append(serializer.errors)
+                
+                    
+            if len(error_list)>0:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:        # serialized_data['contains_nudity'] = contains_nudity
+                return Response(review_response, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class LandmarkImagesView(APIView):
+    
+    permission_classes=[IsAuthenticatedOrReadOnly]
+
+
+    def get(self, request, landmark_id):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        images = landmark.images.all()
+        serializer = ImageSerializer(images, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def post(self, request, landmark_id):
+        try:
+            landmark = get_object_or_404(Landmark,id=landmark_id)
+            
+            # print(landmark)
+            image_list= request.data.pop('image_list',None)
+            request_data_copy = request.data.copy()
+            request_data_copy['userObject'] = request.user.id
+            # request_data_copy['content_object'] = landmark
+            # print("request_data_copy")
+            request_data_copy['content_type'] = ContentType.objects.get_for_model(Landmark).id
+            request_data_copy['object_id'] = landmark.id
+            image_response =[]
+            error_list = []
+            for image in image_list:
+                request_data_copy['image']=image
+                # print(request_data_copy)
+                serializer = ImageSerializer(data=request_data_copy)
+                print('here')
+                if serializer.is_valid():
+                    serializer.save()
+                    image = get_object_or_404(Image,id=serializer.data.get('id'))
+                    # image.contains_nudity = contains_nudity
+                    # print(image)
+                    data = QueryDict(mutable=True)
+                    data['landmark'] = landmark.id
+                    data['image'] = image.id
+                    
+                    landmarkImageSerializer = LandmarkImagesSerializer(data=data)
+                    if landmarkImageSerializer.is_valid():
+                        landmarkImageSerializer.save()
+                        image_response.append(serializer.data)
+                    # serialized_data = serializer.data
+                    else:
+                        error_list.append(landmarkImageSerializer.errors)
+                        image.delete()
+                else:
+                    error_list.append(serializer.errors)
+                    image.delete()
+                    
+            if len(error_list)>0:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:        # serialized_data['contains_nudity'] = contains_nudity
+                return Response(image_response, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LandmarkListView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
@@ -76,6 +194,7 @@ class LandmarkView(APIView):
 
 
 class LandmarkCoreListView(APIView):
+    permission_classes=[IsAuthenticatedOrReadOnly]
     def get(self, request, format=None):
 
         landmarks = Landmark.objects.all()
@@ -85,14 +204,16 @@ class LandmarkCoreListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
         
     def post(self, request, format=None):
-        mainserializer = LandmarkSerializer(data=request.data)
+        
+        copy_data = request.data.copy()
+        copy_data['user_created_by'] =  request.user.id
+        mainserializer = LandmarkSerializer(data=copy_data)
 
         if mainserializer.is_valid():
             mainserializer.save()
-            print('\n\n\ni\n\n\n')
+            # print('\n\n\ni\n\n\n')
 
-            landmark = get_object_or_404(
-                Landmark, id=mainserializer.data.get("id"))
+            landmark = get_object_or_404(Landmark, id=mainserializer.data.get("id"))
             # print(landmark)
             # landmark = get_object_or_404(
             #     Landmark, id=17)
@@ -130,49 +251,4 @@ class LandmarkCoreListView(APIView):
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # def post(self, request, format=None):
-    #     mainserializer = LandmarkSerializer(data=request.data)
-
-    #     if mainserializer.is_valid():
-    #         mainserializer.save()
-
-    #         landmark = get_object_or_404(
-    #             Landmark, id=mainserializer.data.get("id"))
-    #         # landmark = get_object_or_404(
-    #         #     Landmark, id=17)
-
-    #         print(landmark, "\n\n\n")
-    #         # request.data.pop('image', None)
-    #         try:
-    #             languages = Language.objects.all()
-                
-    #             request_data_copy = request.data.copy()
-    #             request_data_copy.pop('image')
-    #             # print(request_data_copy)
-    #             # request_data_copy['image']=request.data['image']
-    #             request_data_copy['landmarkObject'] = landmark.id
-    #             # print(request_data_copy)
-    #             landmarklangVersions = []
-    #             landmarklangVersionsErrors = []
-    #             for language in languages:
-    #                 request_data_copy['lang'] = language.id
-    #                 print(request.data, "\n\n")
-    #                 serializer = LandmarksSerializer(data=request_data_copy)
-
-    #                 if serializer.is_valid():
-    #                     serializer.save()
-    #                     landmarklangVersions.append(serializer.data)
-    #                 else:
-    #                     landmarklangVersionsErrors.append(serializer.errors)
-
-    #             if len(landmarklangVersionsErrors) > 0:
-    #                 landmark.delete()
-    #                 return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
-    #             else:
-    #                 return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
-    #         except Exception as e:
-    #             landmark.delete()
-    #             return Response(e, status=status.HTTP_400_BAD_REQUEST)
-
-    #     return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    

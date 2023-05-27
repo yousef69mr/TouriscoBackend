@@ -75,7 +75,7 @@ class LandmarkEventListView(APIView):
 
 # get all landmark events core 
 class LandmarkEventCoreListView(APIView):
-
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def get(self, request, format=None):
 
         events = LandmarkEvent.objects.all()

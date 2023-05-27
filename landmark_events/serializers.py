@@ -13,6 +13,7 @@ class EventSerializer(serializers.ModelSerializer):
         model = LandmarkEvent
         # fields = ('id','name','','landmarkObject','isMain','created','active')
         fields = '__all__'
+        read_only_fields = ['id','active']
 
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}
@@ -37,6 +38,7 @@ class EventsSerializer(serializers.ModelSerializer):
         model = LandmarkEventLanguageBased
 
         fields = '__all__'
+        read_only_fields = ['id','active']
         
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}
