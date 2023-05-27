@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'reviews.apps.ReviewsConfig',
     'corsheaders',
     'rest_framework',
+    # 'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'django_countries',
@@ -82,7 +83,7 @@ REST_FRAMEWORK = {
 
 # JWT configration
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -168,10 +169,10 @@ DATABASES = {
 }
 
 
-# deploy postgres database to live server
-DATABASES = {
-    'default': dj_database_url.parse(env('DB_URL'))
-}
+# # deploy postgres database to live server
+# DATABASES = {
+#     'default': dj_database_url.parse(env('DB_URL'))
+# }
 
 
 
