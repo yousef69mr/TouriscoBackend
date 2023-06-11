@@ -4,8 +4,14 @@ from rest_framework.views import APIView
 # from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAdminUser,IsAuthenticatedOrReadOnly
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import AccessToken
+from django.views.decorators.csrf import csrf_exempt
 
+# import google.cloud.dialogflow_v2 as dialogflow
+from google.api_core.exceptions import GoogleAPIError
+import dialogflow
+
+import os
+from TouriscoBackend.settings import BASE_DIR
 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, get_list_or_404
@@ -58,3 +64,105 @@ class ImageView(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
+       
+def convert(data):
+    if isinstance(data, bytes):
+        return data.decode('ascii')
+    if isinstance(data, dict):
+        return dict(map(convert, data.items()))
+    if isinstance(data, tuple):
+        return map(convert, data)
+
+    return data        
+class ChatbotView(APIView):
+
+    @csrf_exempt
+    def post(self, request):
+        agent_language_code = 'en'
+        from googletrans import Translator
+        translator=Translator()
+        desired_language=request.POST.get('language_code','ar')
+        input_text = request.POST.get('message','')
+        input_text = translator.translate(text=input_text,dest=agent_language_code).text
+        print(input_text)
+        try:
+            
+            GOOGLE_AUTHENTICATION_FILE_NAME = "tourisco-494f889ff6ac.json"
+            current_directory = os.path.dirname(os.path.realpath(__file__))
+            path = os.path.join(current_directory, GOOGLE_AUTHENTICATION_FILE_NAME)
+            print(path)
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
+
+            GOOGLE_PROJECT_ID = "tourisco"
+            session_id = request.POST.get('session_id','1234567891')
+            context_short_name = "does_not_matter"
+
+            context_name = "projects/" + GOOGLE_PROJECT_ID + "/agent/sessions/" + session_id + "/contexts/" + \
+                    context_short_name.lower()
+
+            parameters = dialogflow.types.struct_pb2.Struct()
+            #parameters["foo"] = "bar"
+
+            context_1 = dialogflow.types.context_pb2.Context(
+                name=context_name,
+                lifespan_count=2,
+                parameters=parameters
+            )
+            query_params_1 = {"contexts": [context_1]}
+            
+            response = detect_intent_with_parameters(
+                project_id=GOOGLE_PROJECT_ID,
+                session_id=session_id,
+                query_params=query_params_1,
+                language_code=agent_language_code,
+                user_input=input_text
+            )
+            if agent_language_code  is not desired_language:
+                response_text = translator.translate(text=response.query_result.fulfillment_text,src=agent_language_code,dest=desired_language).text
+            else:
+                response_text = response.query_result.fulfillment_text
+
+            return Response({'response':response_text}, status=status.HTTP_200_OK)
+        except GoogleAPIError as e:
+            # Handle API errors
+            if e.code == 403:
+                return Response({'error': 'Authentication failed'}, status=status.HTTP_401_UNAUTHORIZED)
+            elif e.code == 429:
+                return Response({'error': 'API rate limit exceeded'}, status=status.HTTP_429_TOO_MANY_REQUESTS)
+            else:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
+
+def detect_intent_with_parameters(project_id, session_id, query_params, language_code, user_input):
+    """Returns the result of detect intent with texts as inputs.
+    Using the same `session_id` between requests allows continuation
+    of the conversaion."""
+    session_client = dialogflow.SessionsClient()
+
+    session = session_client.session_path(project_id, session_id)
+    print('Session path: {}\n'.format(session))
+
+    #text = "this is as test"
+    text = user_input
+
+    text_input = dialogflow.types.TextInput(
+        text=text, language_code=language_code)
+
+    query_input = dialogflow.types.QueryInput(text=text_input)
+
+    response = session_client.detect_intent(
+        session=session, query_input=query_input,
+        query_params=query_params
+    )
+
+    print('=' * 20)
+    print('Query text: {}'.format(response.query_result.query_text))
+    print('Detected intent: {} (confidence: {})\n'.format(
+        response.query_result.intent,
+        response.query_result.intent_detection_confidence))
+    print('Fulfillment text: {}\n'.format(
+        response.query_result.fulfillment_text))
+
+    return response
+    

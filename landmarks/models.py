@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 # import os
-from tourism_categories.models import TourismCategory
+from tourism_categories.models import TourismCategory,TypeCategory,TypeCategoryLanguageBased
 from system.models import Language,Image
 from governorates.models import Governorate
 from reviews.models import Review
@@ -43,19 +43,21 @@ ERAS = (
 class Landmark(models.Model):
     name = models.CharField(default='', max_length=100, unique=True)
     image = models.ImageField(default='defaults/landmark_default.jpg',upload_to=LandmarkImagesPath)
-    tourismCategoryObject = models.ForeignKey(TourismCategory,on_delete=models.CASCADE)
+    tourismCategoryObject = models.ForeignKey(TourismCategory,on_delete=models.SET_NULL, null=True)
+    typeCategoryObject = models.ForeignKey(TypeCategory,on_delete=models.CASCADE,default=1)
     images= models.ManyToManyField(Image,through='LandmarkImage',blank=True)
     reviews = models.ManyToManyField(Review,through='LandmarkReview',blank=True)
     user_created_by = models.ForeignKey(User,on_delete=models.PROTECT,default=1)
     area = models.FloatField(help_text="Squared Area in metre")
     location = models.TextField( help_text="google maps link ")
     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
+    
     height = models.FloatField(default=1, help_text="height in metre")
     foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date")
     foundationDateEra = models.CharField(choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
-
+   
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
     #     if 'temp' in self.image.name:
@@ -107,22 +109,32 @@ class LandmarkReview(models.Model):
 #         return f'{self.landmark.name} image'
 
 class LandmarkLanguageBased(models.Model):
+    
     landmarkObject = models.ForeignKey(Landmark, on_delete=models.CASCADE, verbose_name="landmark")
     lang = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name="language")
     title = models.CharField(max_length=30)
     founder = models.CharField(max_length=70, null=True, blank=True)
     description = models.TextField()
+    category_type = models.ForeignKey(TypeCategoryLanguageBased, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="category type")
     address = models.TextField(max_length=300)
     # foreignersPrice = models.FloatField(help_text="price in Egyptian Pound")
     # localPrice = models.FloatField(help_text="price in Egyptian Pound")
 
-    created = models.DateTimeField(
-        default=timezone.now, verbose_name="Creation Date")
+    created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['id']
         unique_together = (("landmarkObject", "lang"),)
+    
+    def get_category_type(self):
+        return TypeCategoryLanguageBased.objects.get(categoryObject=self.landmarkObject.typeCategoryObject,lang=self.lang)
+    
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.category_type and hasattr(self.landmarkObject, 'typeCategoryObject'):
+            self.category_type = self.get_category_type()
 
     def __str__(self):
         return f'{self.title} => {self.lang.name}'

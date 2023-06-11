@@ -16,12 +16,16 @@ class LanguageSerializer(serializers.ModelSerializer):
 
 
 class ImageSerializer(serializers.ModelSerializer):
-    user = UserSerializer(source='userObject',read_only=True)
+    # user = UserSerializer(source='userObject',read_only=True)
     class Meta:
         model = Image
         fields = '__all__'
         read_only_fields = ['id','active']
-        # read_only_fields = ['id']
+        extra_kwargs = {
+            # 'userObject': {'write_only': True},
+            'content_type': {'write_only': True},
+            'object_id': {'write_only': True},
+        }
         
     def create(self, validated_data):
         print(validated_data)
@@ -33,7 +37,7 @@ class ImageSerializer(serializers.ModelSerializer):
         # contains_nudity = detector.detect(image.image.path)
         # print(contains_nudity)
         instance = Image.objects.create(userObject=user,image=image,**validated_data)
-        print(instance)
+        # print(instance)
         return instance
     
 

@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import TourismCategory,TourismCategoryLanguageBased
+from .models import (
+    TourismCategory,
+    TourismCategoryLanguageBased,
+    TypeCategory,
+    TypeCategoryLanguageBased
+)
 # Register your models here.
 
 class TourismCategoryAdmin(admin.ModelAdmin):
@@ -26,3 +31,28 @@ class TourismCategoryLanguageBasedAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TourismCategoryLanguageBased,TourismCategoryLanguageBasedAdmin)
+
+class TypeCategoryAdmin(admin.ModelAdmin):
+    
+    model = TypeCategory
+    ordering = ['id']
+    list_display = ['id', 'name', 'created', 'active']
+    list_display_links = ['id', 'name', 'created', 'active']
+    list_filter = ['created', 'active']
+    # list_editable =['description']
+
+
+admin.site.register(TypeCategory,TypeCategoryAdmin)
+
+
+class TypeCategoryLanguageBasedAdmin(admin.ModelAdmin):
+    
+    model = TypeCategoryLanguageBased
+    ordering = ['id']
+    list_display = ['id', 'title', 'categoryObject','lang', 'created', 'active']
+    list_display_links = ['id', 'title', 'categoryObject','lang', 'created', 'active']
+    list_filter = ['created','lang','categoryObject', 'active']
+    # list_editable =['description']
+
+
+admin.site.register(TypeCategoryLanguageBased,TypeCategoryLanguageBasedAdmin)

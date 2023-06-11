@@ -38,3 +38,29 @@ class TourismCategoryLanguageBased(models.Model):
     def __str__(self):
         return f'{self.title} => {self.lang.name}'
 
+
+class TypeCategory(models.Model):
+    name = models.CharField(default='', max_length=30, unique=True)
+
+    created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
+    active = models.BooleanField(default=True, blank=False)
+
+    class Meta:
+        verbose_name = 'Type Category'
+        verbose_name_plural = 'Type Categories'
+
+    def __str__(self):
+        return f'{self.name}'
+
+
+class TypeCategoryLanguageBased(models.Model):
+    lang = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name="language")
+    categoryObject = models.ForeignKey(TypeCategory, on_delete=models.CASCADE, verbose_name="core")
+    title = models.CharField(max_length=70)
+    description = models.TextField(null=True,blank=True)
+    created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
+    active = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return f'{self.title} => {self.lang.name}'
+

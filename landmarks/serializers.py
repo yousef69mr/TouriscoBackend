@@ -1,6 +1,7 @@
 from rest_framework import serializers
 # from django.utils import timezone
 from .models import Landmark,LandmarkLanguageBased,LandmarkImage,LandmarkReview
+
 from governorates.serializers import GovernorateSerializer
 from system.serializers import LanguageSerializer
 from TouriscoBackend.utils import translate_django_model
@@ -15,7 +16,8 @@ class LandmarkSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
         extra_kwargs = {
                 # 'url': {'lookup_field': 'lang_code'}
-                'govObject': {'write_only': True}
+                'govObject': {'write_only': True},
+                'typeCategoryObject': {'write_only': True}
             }
         
     def create(self, validated_data):
@@ -41,6 +43,7 @@ class LandmarkSerializer(serializers.ModelSerializer):
 class LandmarksSerializer(serializers.ModelSerializer):
     landmark = LandmarkSerializer(source='landmarkObject', read_only=True)
     language = LanguageSerializer(source='lang', read_only=True)
+    category_type = serializers.CharField(source='category_type.title', read_only=True)
     # date_field = CustomDateField(source='created')
 
     class Meta:

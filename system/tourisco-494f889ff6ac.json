@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "tourisco",
+  "private_key_id": "494f889ff6ac7c7992a8e1800f0f670725594dcd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDHZrgS9bP3gRAN\nOEHl838crL9ZO/c0Bgo+K8J66xbYiNCwa7D8ttwfGadInFc92Dkhz0eRXdru9VoT\nmkwgCKb9VZv0aTjlImtdA5W62PjDhP8ZDYgP1aUIX1rTjyXAlimKR8hj8wgPruci\nEAcvd9XKv2SaNqGLRU0LNj7f46FKHex67126MX2XbdeNMALgP1EbHVW9VPZ6ahGs\neHmkYXNq0LhKEErROSMNDm97iXfaQ7LAe4DNIQ6sxZf7tLDqQx5OJ71srwG8vZT0\nEAatqmwMUH90S6npvQ65wUgbQ0VUNzrBfpBObjMY3gFPvndeWmlD6Jb+RWoWfCBK\nVF+EgKSPAgMBAAECggEAKyivhOMLjfGwcLwRf10h0SoOzJivG+KGywgbsxE5Q6rx\nSI42o6xMnqqly5CTTX6Edy3vNqaS4Y/XbFDEU1asFj82X0N7HhVCGcLR4Lxfs6oQ\nsPJ91bePXe2NsibUrAeUfCqnVALhZsubmYLQm1SbwKOGed6DPqrETz3xg/I4Edtg\nasbJhF7Hti9sg4gZhJ9Z8c7b5gto3DOgkDXX1u+ex13ng1ZBXQIjupzxFd68qg+Q\nmJaWsFBvjgvoVLKZTUAErjE5Rj3GgbINRP7/GxU8gx4/CXNzYN1jH6dwSdopGetJ\nT8LcEP/vL/rQfuZY1GdAQu5ltYb/XFcXJ34efxAFeQKBgQDiWWas22gxzulJAE10\ngDh7DZsEKbpfBqxUA0WZ2x1GBFt0YdaHw6t1ZvMxqiZdaQHneHncK0p+b21ac2Iw\n5nFV54ZATEUpPz+/OUTf55T9Mdtq4AzYISEL9LpwRj50P1VY0iNIogOocT7CRx3M\nqwb8hGMOtAOlZy+p4ThfCRMbbQKBgQDhhZ7GgYyHjmvbCQnzzjm4F2uoGMTS6B51\n0V1SAtjD7rPNFG1vwpy8BNefukD3YVpvSrEu++jdnhHLkkR+05drWHco2w6aeK5P\ndRcg45EU+MNUlH0/eBGf9dWX3hIHNCtUpHB9E+rDioxFHus07cLoml5XHNr5KPcJ\nO3slp/omawKBgCEGXj62PHuX7t2h16s50gPSNl3jILggpyAS4iLSn3DJzfYrGDvy\nxp94h98lLjfOzGJTZ6RCBLpx04iw8RClbr/T6fiTqDueaNSjrHLmvQw8LAFp8zXN\nj57I9DLRbOdVHkS5VECSsunuq/N4oNZt1bUeM72/chC9/2xP2gOztT/5AoGBAL/c\nWK7SigbNMI8AypnDibFHI4y3vcMcPMXJH1ZlG5rdGdRQG6Zn78W5bOPzpc+P4Ess\nRT8Oixb3onYI8wLe6kQl2AJHEs5x+wGYQNv3Hne0ByGOzltPv9bRYyy3fajpRi/V\nUennJuPCnAE2A65c1GPk6Hu+DcDJjBkrpGHt3VAPAoGBALxrIWIsC1WWSO5Sb3tM\naqfIxIq0dWczM+D6bG/u7lr/7BTJmuEcuOCMunT9Fk9i1G5liFsYGYhFDOoBhEe/\nqomV28fdM16Fyz7a+NWioTVuMsVvNNaNSw9X4qvczKV4PD0uIADwuunhWkHC8wCP\nc2DJYVcwnSIfcVdC/B1TsiU4\n-----END PRIVATE KEY-----\n",
+  "client_email": "chatbot@tourisco.iam.gserviceaccount.com",
+  "client_id": "113346991862006578180",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/chatbot%40tourisco.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

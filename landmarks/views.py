@@ -95,9 +95,8 @@ class LandmarkImagesView(APIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
     def post(self, request, landmark_id):
+        landmark = get_object_or_404(Landmark,id=landmark_id)
         try:
-            landmark = get_object_or_404(Landmark,id=landmark_id)
-            
             # print(landmark)
             image_list= request.data.pop('image_list',None)
             request_data_copy = request.data.copy()
@@ -112,7 +111,7 @@ class LandmarkImagesView(APIView):
                 request_data_copy['image']=image
                 # print(request_data_copy)
                 serializer = ImageSerializer(data=request_data_copy)
-                print('here')
+                # print('here')
                 if serializer.is_valid():
                     serializer.save()
                     image = get_object_or_404(Image,id=serializer.data.get('id'))
@@ -135,7 +134,7 @@ class LandmarkImagesView(APIView):
                     image.delete()
                     
             if len(error_list)>0:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
             else:        # serialized_data['contains_nudity'] = contains_nudity
                 return Response(image_response, status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -222,8 +221,9 @@ class LandmarkCoreListView(APIView):
             try:
                 languages = Language.objects.all()
                 # request_data_copy.pop('image')
-                request.data.pop('image')
+                request.data.pop('image',None)
                 request_data_copy = request.data.copy()
+                # print(request_data_copy)
                 # print(request_data_copy)
                 # request_data_copy['image']=request.data['image']
                 request_data_copy['landmarkObject'] = landmark.id
