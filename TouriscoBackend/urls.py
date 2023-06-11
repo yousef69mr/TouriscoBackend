@@ -31,13 +31,14 @@ urlpatterns = [
     path('api/', include('users.urls')),
     path('api/', include('reviews.urls')),
     path('api-auth', include('rest_framework.urls', namespace='rest_framework')),
-] 
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-else:
-    urlpatterns += [
-        # Serve media files in production using WhiteNoise
-        path(settings.MEDIA_URL[1:], serve, {'document_root': settings.MEDIA_ROOT}),
-    ]
+
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# else:
+#     urlpatterns += [
+#         # Serve media files in production using WhiteNoise
+#         path(settings.MEDIA_URL[1:], serve, {'document_root': settings.MEDIA_ROOT}),
+#     ]
