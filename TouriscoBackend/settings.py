@@ -36,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = env.bool("DEBUG")
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(', ')
-
+# print(ALLOWED_HOSTS)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
 
 CSRF_TRUSTED_ORIGINS = [
@@ -49,11 +49,13 @@ DOMAIN = env("DOMAIN")
 # Application definition
 
 INSTALLED_APPS = [
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'users.apps.UsersConfig',
@@ -71,6 +73,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_countries',
     'phonenumber_field',
+    
 ]
 
 REST_FRAMEWORK = {
@@ -225,6 +228,8 @@ if not DEBUG:    # Tell Django to copy statics to the `staticfiles` directory
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
+
 
 # media files
 
