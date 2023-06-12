@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
@@ -25,7 +26,7 @@ class UsersView(viewsets.ModelViewSet):
 
 
 class CreateUserView(APIView):
-    # permission_classes=[AllowAny]
+    
     def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -34,3 +35,14 @@ class CreateUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+class ActiveUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request):
+        user = get_object_or_404(User,id=request.user.id)
+        try:
+            serializer = UserSerializer(user)
+            return Response(serializer.data,status=status.HTTP_302_FOUND)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)

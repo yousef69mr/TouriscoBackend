@@ -157,7 +157,7 @@ class LandmarkListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class LandmarkInSpecificGovernorate(APIView):
+class LandmarkInSpecificGovernorateView(APIView):
     lookup_field = ['lang_code', 'landmark_id']
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -171,6 +171,38 @@ class LandmarkInSpecificGovernorate(APIView):
         serializer = LandmarksSerializer(langlandmarks,many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class LandmarkWithSpecificTourismCategoryView(APIView):
+    # lookup_field = ['lang_code', 'landmark_id']
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, tourism_category_id, lang_code, format=None):
+
+        language = get_object_or_404(Language, code=lang_code)
+        # governorate = get_object_or_404(Governorate, id=governorate_id)
+        # print(governorate)
+        langlandmarks = LandmarkLanguageBased.objects.filter(landmarkObject__tourismCategoryObject__id=tourism_category_id, lang=language)
+        print(langlandmarks)
+        serializer = LandmarksSerializer(langlandmarks,many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class LandmarkWithSpecificTypeCategoryView(APIView):
+    # lookup_field = ['lang_code', 'landmark_id']
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get(self, request, type_category_id, lang_code, format=None):
+
+        language = get_object_or_404(Language, code=lang_code)
+        # governorate = get_object_or_404(Governorate, id=governorate_id)
+        # print(governorate)
+        langlandmarks = LandmarkLanguageBased.objects.filter(landmarkObject__typeCategoryObject__id=type_category_id, lang=language)
+        print(langlandmarks)
+        serializer = LandmarksSerializer(langlandmarks,many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class LandmarkView(APIView):

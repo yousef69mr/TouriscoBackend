@@ -14,8 +14,18 @@
 
 ## 5th version :
 
--- Type Model Apis
--- extend access token lifetime
--- add category_type field to landmark
--- fix image load issue
--- Dialogflow chatbot agent with static simple responses (no entities)
+### Type Model Apis
+
+### extend access token lifetime
+
+### add category_type field to landmark
+
+### fix image load issue
+
+### Dialogflow chatbot agent with static simple responses (no entities)
+
+## 6th version :
+
+### add active user api
+
+### add extra apis

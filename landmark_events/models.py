@@ -8,7 +8,7 @@ from system.models import Language
 
 
 class LandmarkEvent(models.Model):
-    name = models.CharField(default='', max_length=40, unique=True)
+    name = models.CharField(default='', max_length=40)
     landmarkObject = models.ForeignKey(Landmark, on_delete=models.CASCADE, verbose_name="landmark")
     
     isMain = models.BooleanField(default=False, verbose_name="Main")
@@ -16,6 +16,10 @@ class LandmarkEvent(models.Model):
     closeTime = models.TimeField()
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True, blank=False)
+
+    class Meta:
+        ordering = ['id']
+        unique_together = (("name", "landmarkObject"),)
 
     def __str__(self):
         # landmark = get_object_or_404(LandmarkLanguageBased, place=self.place.id)

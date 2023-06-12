@@ -141,10 +141,9 @@ class TicketCoreListView(APIView):
 
 class TicketsForSpecificLandmarkEvent(APIView):
     def get(self, request,lang_code, event_id, format=None):
+        event = get_object_or_404(LandmarkEvent,id=event_id)
         try:
             language = Language.objects.get(code=lang_code)
-
-            event = get_object_or_404(LandmarkEvent,id=event_id)
             
             tickets = TicketLanguageBased.objects.filter(lang=language,ticketObject__eventObject=event)
             serializer = TicketsSerializer(tickets, many=True)

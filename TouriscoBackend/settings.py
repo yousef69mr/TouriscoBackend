@@ -173,10 +173,10 @@ DATABASES = {
 }
 
 
-# deploy postgres database to live server
-DATABASES = {
-    'default': dj_database_url.parse(env('DB_URL'))
-}
+# # deploy postgres database to live server
+# DATABASES = {
+#     'default': dj_database_url.parse(env('DB_URL'))
+# }
 
 
 
