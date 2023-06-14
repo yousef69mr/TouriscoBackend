@@ -62,30 +62,23 @@ GENDER = [
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-    profile_image = models.ImageField(
-        default="defaults/avatar.svg", upload_to='profile_images/%y/%m/%d', null=True, blank=True)
-    username = models.CharField(max_length=150, error_messages={'unique': 'A user with that username already exists.'},
-                                help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', unique=True)
+    profile_image = models.ImageField(default="defaults/avatar.svg", upload_to='profile_images/%y/%m/%d', null=True, blank=True)
+    username = models.CharField(max_length=150, error_messages={'unique': 'A user with that username already exists.'},help_text='Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.', unique=True)
     email = models.EmailField(_('Email Address'), unique=True)
     password = models.CharField(max_length=100)
-    raw_password = models.CharField(
-        max_length=100, help_text='You have to update and overwite this field value , If You successfully changed the User\'s password ONLY !!!')
+    # raw_password = models.CharField(max_length=100,blank=True, help_text='You have to update and overwite this field value , If You successfully changed the User\'s password ONLY !!!')
     phone = PhoneNumberField(max_length=16, unique=True)
     gender = models.CharField(max_length=10, choices=GENDER)
     nationality = CountryField()
-    is_staff = models.BooleanField(
-        default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')
-    is_active = models.BooleanField(
-        default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')
-    date_joined = models.DateTimeField(
-        default=timezone.now, verbose_name='Date joined')
-    last_login = models.DateTimeField(
-        blank=True, null=True, verbose_name='last login')
-    is_verified = models.BooleanField(
-        default=False, help_text='Designates whether the user verified his account or not.', verbose_name="Email Verified")
+    birth_date = models.DateField(null=True,verbose_name='Birth Date')
+    is_staff = models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')
+    is_active = models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')
+    date_joined = models.DateTimeField(default=timezone.now, verbose_name='Date joined')
+    last_login = models.DateTimeField(blank=True, null=True, verbose_name='last login')
+    is_verified = models.BooleanField(default=False, help_text='Designates whether the user verified his account or not.', verbose_name="Email Verified")
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'phone']
+    REQUIRED_FIELDS = ['username', 'phone','birth_date']
 
     class Meta:
         verbose_name = 'User'
@@ -108,7 +101,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         m = now.strftime("%m")
         d = now.strftime("%d")
         image_directory = os.path.join(
-            'media\\profile_images\\'+str(y)+'\\'+str(m)+'\\'+str(d)+'\\')
+            'profile_images\\'+str(y)+'\\'+str(m)+'\\'+str(d)+'\\')
         image_url = os.path.join(
             'media/profile_images/'+str(y)+'/'+str(m)+'/'+str(d)+'/', file_name)
 
@@ -158,8 +151,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def set_is_active(self, value):
         self.is_active = value
 
-    def set_visible_password(self, password):
-        self.raw_password = password
+    # def set_visible_password(self, password):
+    #     self.raw_password = password
 
     def __str__(self):
         return f"{self.username}, id: {self.id}"

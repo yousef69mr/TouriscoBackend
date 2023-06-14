@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 # import os
-from tourism_categories.models import TourismCategory,TypeCategory,TypeCategoryLanguageBased
+from categories.models import TourismCategory,TypeCategory,TypeCategoryLanguageBased
 from system.models import Language,Image
 from governorates.models import Governorate
 from reviews.models import Review
@@ -47,9 +47,9 @@ class Landmark(models.Model):
     typeCategoryObject = models.ForeignKey(TypeCategory,on_delete=models.CASCADE,default=1)
     images= models.ManyToManyField(Image,through='LandmarkImage',blank=True)
     reviews = models.ManyToManyField(Review,through='LandmarkReview',blank=True)
-    user_created_by = models.ForeignKey(User,on_delete=models.PROTECT,default=1)
+    user_created_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     area = models.FloatField(help_text="Squared Area in metre")
-    location = models.TextField( help_text="google maps link ")
+    location_link = models.URLField( help_text="google maps link ",max_length=500)
     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
     
     height = models.FloatField(default=1, help_text="height in metre")
@@ -100,13 +100,7 @@ class LandmarkReview(models.Model):
 
     def __str__(self):
         return f'#{self.landmark.name} => {self.review.rating}'
-# class LandmarkImage(models.Model):
-#     landmark = models.ForeignKey(Landmark, on_delete=models.CASCADE)
-#     image = models.ImageField(
-#         upload_to=landmark.id)
 
-#     def __str__(self):
-#         return f'{self.landmark.name} image'
 
 class LandmarkLanguageBased(models.Model):
     
@@ -139,13 +133,13 @@ class LandmarkLanguageBased(models.Model):
     def __str__(self):
         return f'{self.title} => {self.lang.name}'
     
+# many to many relation not used
+# class TourismTypesLandmarkList(models.Model):
+#     landmarkObject = models.ForeignKey(
+#         Landmark, on_delete=models.CASCADE, verbose_name="landmark")
+#     categoryObject = models.ForeignKey(
+#         TourismCategory, on_delete=models.CASCADE, verbose_name="core")
 
-class TourismTypesLandmarkList(models.Model):
-    landmarkObject = models.ForeignKey(
-        Landmark, on_delete=models.CASCADE, verbose_name="landmark")
-    categoryObject = models.ForeignKey(
-        TourismCategory, on_delete=models.CASCADE, verbose_name="core")
-
-    def __str__(self):
-        return f'{self.landmarkObject.name} == {self.categoryObject.name}'
+#     def __str__(self):
+#         return f'{self.landmarkObject.name} == {self.categoryObject.name}'
 

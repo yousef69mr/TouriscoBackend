@@ -34,12 +34,24 @@ class UserSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        # print(validated_data)
+        groups_data = validated_data.pop('groups', None)
+        user_permissions_data = validated_data.pop('user_permissions', None)
         password = validated_data.pop('password', None)
+
         instance = self.Meta.model(**validated_data)
+        # print(instance)
         instance.set_is_active(True)
 
         if password is not None:
             instance.set_password(password)
-            instance.set_visible_password(password)
+            # instance.set_visible_password(password)
+        # print(instance)
         instance.save()
+        if groups_data is not None:
+            instance.groups.set(groups_data)  # Use the set() method to set the many-to-many relationship
+        
+        if user_permissions_data is not None:
+            instance.user_permissions.set(user_permissions_data)  # Use the set() method to set the many-to-many relationship
+
         return instance

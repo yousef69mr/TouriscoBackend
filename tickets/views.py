@@ -30,8 +30,6 @@ class TicketsView(APIView):
     def get(self, request, lang_code, format=None):
 
         language = get_object_or_404(Language, code=lang_code)
-        if language is None:
-            return Response(status=status.HTTP_404_NOT_FOUND)
         
         tickets = TicketLanguageBased.objects.filter(lang=language)
         # print(governorates)
@@ -79,8 +77,7 @@ class TicketView(APIView):
 
         language = get_object_or_404(Language, code=lang_code)
         ticket = get_object_or_404(Ticket, id=ticket_id)
-        langTicket = get_object_or_404(
-            TicketLanguageBased, ticketObject=ticket, lang=language)
+        langTicket = get_object_or_404(TicketLanguageBased, ticketObject=ticket, lang=language)
         print(langTicket)
         serializer = TicketsSerializer(langTicket)
 
@@ -88,9 +85,8 @@ class TicketView(APIView):
 
 # get all landmark events core 
 class TicketCoreListView(APIView):
-
+    permission_classes  = [IsAuthenticatedOrReadOnly]
     def get(self, request, format=None):
-
         tickets = Ticket.objects.all()
         # print(governorates)
         serializer = TicketSerializer(tickets, many=True)

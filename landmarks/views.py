@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from django.http import QueryDict
 
 from django.contrib.contenttypes.models import ContentType
-from rest_framework.permissions import (IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly,IsAuthenticated)
 from system.serializers import ImageSerializer
 from system.models import Image
 from reviews.serializers import ReviewSerializer
@@ -283,4 +283,13 @@ class LandmarkCoreListView(APIView):
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    
+class UserLandmarkListView(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request,lang_code):
+        language = get_object_or_404(Language,code=lang_code)
+        try:
+            landmarks = LandmarkLanguageBased.objects.filter(landmarkObject__user_created_by=request.user.id,lang=language)
+            serializer = LandmarksSerializer(landmarks,many=True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)

@@ -15,6 +15,7 @@ class TicketSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}
             'eventObject': {'write_only': True},
+            'ticketClassObject': {'write_only': True},
         }
 
 
@@ -22,6 +23,7 @@ class TicketSerializer(serializers.ModelSerializer):
 class TicketsSerializer(serializers.ModelSerializer):
     ticket = TicketSerializer(source='ticketObject',read_only=True)
     language = LanguageSerializer(source='lang',read_only=True)
+    ticket_class_category = serializers.CharField(source='ticket_class_category.title', read_only=True)
 
     class Meta:
         model = TicketLanguageBased
