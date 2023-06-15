@@ -1,3 +1,4 @@
-id,name,image,active,created
-1,Islamic_Tourism,defaults/tourism_category_default.jpg,t,2023-05-13 00:55:54+00
-2,Cultural_Tourism,defaults/tourism_category_default.jpg,t,2023-06-10 22:19:33+00
+id,name,created,active
+1,Archaeological_ٍSite,2023-06-11 20:00:04+02,t
+2,Hotel,2023-06-11 20:12:05.567019+02,f
+3,Hospital,2023-06-11 20:15:31.13035+02,t

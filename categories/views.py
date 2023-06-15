@@ -29,7 +29,7 @@ class  TourismCategoriesListView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
     # serializer_class = LandmarksSerializer
     lookup_field = 'lang_code'
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, lang_code, format=None):
 
@@ -62,7 +62,7 @@ class TourismCategoryView(APIView):
 
 class TourismCategoriesCoreListView(APIView):
 
-    # permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminUser]
 
     def get(self, request, format=None):
 
@@ -121,7 +121,7 @@ class  TypeCategoriesListView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
     # serializer_class = LandmarksSerializer
     lookup_field = 'lang_code'
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, lang_code, format=None):
 

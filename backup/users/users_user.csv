@@ -1,2 +1,4 @@
-"id","is_superuser","profile_image","username","email","password","raw_password","phone","gender","nationality","is_staff","is_active","date_joined","last_login","is_verified"
-1,True,"defaults/avatar.svg","super_admin","admin@admin.com","pbkdf2_sha256$390000$u6O3XQd5BfGDpOlRmFp3wm$edNJVl9R6qYCOfCpVjMRV1wshSxmb07ANETtlTMOv7k=","admin","+201095702620","male","EG",True,True,"2023-05-07 00:26:26.11525+02","2023-05-07 00:26:46.339425+02",True
+id,is_superuser,profile_image,username,email,password,phone,gender,nationality,is_staff,is_active,date_joined,last_login,is_verified,birth_date
+1,t,defaults/avatar.svg,super_admin,admin@admin.com,pbkdf2_sha256$390000$BOm3iaQfHUotuH9JTGJVBw$g+3M+WcMigYkFoc3Z/SnnNwy30Jguwnzi2sI6B3OXjM=,+201095702620,male,EG,t,t,2023-06-14 20:10:29.902133+02,2023-06-14 20:29:29.729964+02,t,
+2,t,defaults/avatar.svg,super_admin2,admin2@admin.com,pbkdf2_sha256$390000$i10FhhNg0p5SKwa2RtH8bn$rG7Hq7KnQDGKjjCQjP9FXU7TUsSNs5COg0V+6hLswVM=,+201022812045,male,EG,t,t,2023-06-14 23:43:43.189258+02,,t,2001-04-13
+3,f,defaults/avatar.svg,ahmed mohamed,email@email.com,pbkdf2_sha256$390000$HqEqQeqh9gIDJjXFZYaiiw$EjslqOzRJmoqR4QK0dL0nlWYVRckpM78Wss+XQZoP1I=,+201095702624,male,EG,f,t,2023-06-15 00:54:25.185625+02,,f,2001-04-13
