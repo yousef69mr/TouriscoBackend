@@ -42,3 +42,7 @@
 ### 7.1.1 version :
 
 1. fix image issue in tourism category create api
+
+### 7.1.2 version :
+
+1. fix image load issue again
