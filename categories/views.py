@@ -79,15 +79,14 @@ class TourismCategoriesCoreListView(APIView):
         if mainserializer.is_valid():
             mainserializer.save()
 
-            category = get_object_or_404(
-                TourismCategory, id=mainserializer.data.get("id"))
+            category = get_object_or_404(TourismCategory, id=mainserializer.data.get("id"))
             # category =  get_object_or_404(
             #     TourismCategory, id=7)
 
             # print(category, "\n\n\n")
             try:
                 languages = Language.objects.all()
-
+                request.data.pop('image',None)
                 request_data_copy = request.data.copy()
 
                 request_data_copy['categoryObject'] = category.id
