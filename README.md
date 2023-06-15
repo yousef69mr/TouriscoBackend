@@ -2,30 +2,43 @@
 
 ## 3rd version :
 
-### Tickets Model Apis
+1. Tickets Model Apis
 
 ## 4th version :
 
-### Reviews Model Apis
+1. Reviews Model Apis
 
-### Image Model Apis
+2. Image Model Apis
 
-### Relation Structure fix
+3. Relation Structure fix
 
 ## 5th version :
 
-### Type Model Apis
+1. Type Model Apis
 
-### extend access token lifetime
+2. extend access token lifetime
 
-### add category_type field to landmark
+3. add category_type field to landmark
 
-### fix image load issue
+4. fix image load issue
 
-### Dialogflow chatbot agent with static simple responses (no entities)
+5. Dialogflow chatbot agent with static simple responses (no entities)
 
 ## 6th version :
 
-### add active user api
+1. add active user api
 
-### add extra apis
+2. add extra apis
+
+# 7th version :
+
+1. TourPackage Model Apis except create api.
+2. fix issues and bugs
+
+## 7.1 version:
+
+1. make all categories create admin apis
+
+### 7.1.1 version :
+
+1. fix image issue in tourism category create api
