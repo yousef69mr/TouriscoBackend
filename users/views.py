@@ -22,7 +22,7 @@ class UsersView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     # print(invertedIndex())
-    permission_classes = [IsAuthenticatedOrReadOnly,IsAdminUser]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class CreateUserView(APIView):
