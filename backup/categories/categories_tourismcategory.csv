@@ -1,3 +1,11 @@
 id,name,image,created,active
-1,Islamic_Tourism,defaults/tourism_category_default.jpg,2023-05-13 00:55:54+00,t
-2,Cultural_Tourism,defaults/tourism_category_default.jpg,2023-06-10 22:19:33+00,t
+1,Cultural_Tourism,defaults/tourism_category_default.jpg,2023-06-14 20:19:28.484251+02,t
+2,Islamic_Tourism,defaults/tourism_category_default.jpg,2023-06-14 20:20:44.254366+02,t
+4,Dark_Tourism,tourism_categories_images/Dark_Tourism/alamen_tombs.jpg,2023-06-16 01:52:36.545017+02,t
+3,Sport_Tourism,tourism_categories_images/Sport_Tourism/Panorma_Cairo_Stadium.jpg,2023-06-16 01:10:06+02,t
+5,Regional_Tourism,tourism_categories_images/Regional_Tourism/محمد_على_ميدان_المنشية_اسكندرية.jpg,2023-06-16 02:10:39.528313+02,t
+6,Beach_Tourism,tourism_categories_images/Beach_Tourism/beach.jpg,2023-06-16 02:16:42.339557+02,t
+7,Religious_Tourism,tourism_categories_images/Religious_Tourism/الدعاء-4.jpg,2023-06-16 02:35:11.191125+02,t
+8,Medical_Tourism,tourism_categories_images/Medical_Tourism/medical-tourism-in-egypt-850x500.jpg,2023-06-16 02:41:04.249297+02,t
+9,Food_Tourism,tourism_categories_images/Food_Tourism/976781106_Traditional_Egyptian_Food.jpg,2023-06-16 02:45:11.733692+02,t
+10,Educational_Tourism,tourism_categories_images/Educational_Tourism/Cairo_University_550.jpg,2023-06-16 02:59:15.280475+02,t

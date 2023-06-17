@@ -46,3 +46,7 @@
 ### 7.1.2 version :
 
 1. fix image load issue again
+
+### 7.1.3 version :
+
+1. edit landmark model char length

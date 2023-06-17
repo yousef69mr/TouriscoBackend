@@ -106,11 +106,11 @@ class LandmarkLanguageBased(models.Model):
     
     landmarkObject = models.ForeignKey(Landmark, on_delete=models.CASCADE, verbose_name="landmark")
     lang = models.ForeignKey(Language, on_delete=models.CASCADE, verbose_name="language")
-    title = models.CharField(max_length=30)
-    founder = models.CharField(max_length=70, null=True, blank=True)
+    title = models.CharField(max_length=100)
+    founder = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField()
     category_type = models.ForeignKey(TypeCategoryLanguageBased, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="category type")
-    address = models.TextField(max_length=300)
+    address = models.TextField(max_length=500)
     # foreignersPrice = models.FloatField(help_text="price in Egyptian Pound")
     # localPrice = models.FloatField(help_text="price in Egyptian Pound")
 
