@@ -54,3 +54,5 @@
 ### 7.1.4 version :
 
 1. edit landmark serializer return its image objects
+2. edit landmark serializer return its reviews objects
+3. edit review serializer return its image objects

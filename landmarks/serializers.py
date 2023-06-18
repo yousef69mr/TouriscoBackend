@@ -4,12 +4,14 @@ from .models import Landmark,LandmarkLanguageBased,LandmarkImage,LandmarkReview
 
 from governorates.serializers import GovernorateSerializer
 from system.serializers import LanguageSerializer,ImageSerializer
+from reviews.serializers import ReviewSerializer
 from TouriscoBackend.utils import translate_django_model
 
 
 class LandmarkSerializer(serializers.ModelSerializer):
     governorate = GovernorateSerializer(source='govObject', read_only=True)
     images = ImageSerializer(many=True,read_only=True)
+    reviews = ReviewSerializer(many=True,read_only=True)
 
     class Meta:
         model = Landmark
