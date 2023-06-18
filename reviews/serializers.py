@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import ReviewImage,Review
 from system.serializers import ImageSerializer
+from users.serializers import UserReviewSerializer
 
 
 class ReviewImagesSerializer(serializers.ModelSerializer):
@@ -11,6 +12,7 @@ class ReviewImagesSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    user = UserReviewSerializer(read_only=True)
     images = ImageSerializer(many=True,read_only=True)
     class Meta:
         model= Review
