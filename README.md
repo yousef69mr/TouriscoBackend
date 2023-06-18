@@ -56,3 +56,7 @@
 1. edit landmark serializer return its image objects
 2. edit landmark serializer return its reviews objects
 3. edit review serializer return its image objects
+
+### 7.1.5 version :
+
+1. return user object in review object
