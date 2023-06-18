@@ -50,3 +50,7 @@
 ### 7.1.3 version :
 
 1. edit landmark model char length
+
+### 7.1.4 version :
+
+1. edit landmark serializer return its image objects
