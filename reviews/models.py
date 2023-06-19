@@ -27,7 +27,7 @@ class Review(models.Model):
     rating = models.FloatField(validators=[MinValueValidator(0), MaxValueValidator(5)])
     comment = models.TextField(blank=True,null=True)
     images = models.ManyToManyField(Image,through='ReviewImage')
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    userObject = models.ForeignKey(User,on_delete=models.CASCADE)
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, limit_choices_to={'app_label__in': ['landmarks', 'landmark_events']})
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')

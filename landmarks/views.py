@@ -44,7 +44,7 @@ class LandmarkReviewsView(APIView):
             # print(landmark)
             # image_list= request.data.pop('image_list',None)
             request_data_copy = request.data.copy()
-            request_data_copy['user'] = request.user.id
+            request_data_copy['userObject'] = request.user.id
             # request_data_copy['content_object'] = landmark
             # print("request_data_copy")
             request_data_copy['content_type'] = ContentType.objects.get_for_model(Landmark).id

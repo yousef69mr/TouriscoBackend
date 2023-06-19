@@ -194,12 +194,14 @@ class ReviewImagesView(APIView):
 
     def post(self, request, review_id):
         # try:
-            review = get_object_or_404(Review,id=review_id)
-            
+        review = get_object_or_404(Review,id=review_id)
+        try:
             # print(landmark)
             image_list= request.data.pop('image_list',None)
             request_data_copy = request.data.copy()
-            request_data_copy['userObject'] = 1
+            request_data_copy['userObject'] = request.user.id
+            print(request.user.id)
+            print(request_data_copy)
             # request_data_copy['content_object'] = landmark
             # print("request_data_copy")
             request_data_copy['content_type'] = ContentType.objects.get_for_model(Review).id
@@ -216,6 +218,7 @@ class ReviewImagesView(APIView):
                     image = get_object_or_404(Image,id=serializer.data.get('id'))
                     # image.contains_nudity = contains_nudity
                     # print(image)
+                    print('here')
                     data = QueryDict(mutable=True)
                     data['review'] = review.id
                     data['image'] = image.id
@@ -236,5 +239,6 @@ class ReviewImagesView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             else:        # serialized_data['contains_nudity'] = contains_nudity
                 return Response(image_response, status=status.HTTP_201_CREATED)
-        # except Exception as e:
-        #     return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

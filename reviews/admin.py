@@ -7,7 +7,7 @@ from .models import Review,ReviewImage
 class ReviewAdmin(admin.ModelAdmin):
     model = Review
     ordering = ['id']
-    list_display = ['id','user','content_object','rating' , 'created', 'active']
+    list_display = ['id','userObject','content_object','rating' , 'created', 'active']
     list_display_links = ['id', 'rating', 'created']
     list_filter = ['content_type','created', 'active']
 

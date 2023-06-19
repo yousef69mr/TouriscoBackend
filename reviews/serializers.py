@@ -12,7 +12,7 @@ class ReviewImagesSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    user = UserReviewSerializer(read_only=True)
+    user = UserReviewSerializer(source='userObject',read_only=True)
     images = ImageSerializer(many=True,read_only=True)
     class Meta:
         model= Review
