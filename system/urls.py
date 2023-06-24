@@ -5,13 +5,14 @@ from django.urls import path, include
 from .views import (
     ImageListView,
     ImageView,
-    ChatbotView
+    ChatbotView,
+    DownloadMediaFolderView
 )
 
 
 urlpatterns = [
     path('images/',ImageListView.as_view()),
     path('images/<int:image_id>/',ImageView.as_view()),
-    path('chatbot/',ChatbotView.as_view())
-
+    path('chatbot/',ChatbotView.as_view()),
+    path('download_media_folder/',DownloadMediaFolderView.as_view())
 ]

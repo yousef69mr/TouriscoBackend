@@ -62,6 +62,15 @@ class Image(models.Model):
         else:
             return f'{os.path.basename(self.image.name)}'
 
+class Coordinate(models.Model):
+    latitude = models.DecimalField(max_digits=9, decimal_places=7)
+    longitude = models.DecimalField(max_digits=9, decimal_places=7)
+    created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Latitude: {self.latitude}, Longitude: {self.longitude}"
+
 
 # def LandmarkImagesPath(instance, filename):
 #     return f'landmark_images/{instance.name}/{filename}'

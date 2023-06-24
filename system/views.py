@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 # from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.permissions import IsAdminUser,IsAuthenticatedOrReadOnly
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
 # import google.cloud.dialogflow_v2 as dialogflow
@@ -166,3 +166,34 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
 
     return response
     
+
+
+class DownloadMediaFolderView(APIView):
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request, format=None):
+        from django.http import FileResponse
+        import os
+        
+        import tempfile
+        import zipfile
+
+
+        # Get the path to the media folder
+        media_root = settings.MEDIA_ROOT
+
+        # Zip the contents of the media folder into a temporary file
+        zip_path = os.path.join(tempfile.gettempdir(), 'media.zip')
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for root, dirs, files in os.walk(media_root):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    zip_file.write(file_path, os.path.relpath(file_path, media_root))
+
+        # Create a response with the temporary file as an attachment
+        response = FileResponse(open(zip_path, 'rb'), as_attachment=True, filename='media.zip')
+
+        # Set the content type to "application/zip"
+        response['Content-Type'] = 'application/zip'
+
+        return response

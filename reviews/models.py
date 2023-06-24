@@ -40,7 +40,7 @@ class Review(models.Model):
         ordering = ['-created']
 
     def __str__(self):
-        return f'#{self.id} ) {self.user.username} => {self.rating}'
+        return f'#{self.id} ) {self.userObject.username} => {self.rating}'
     
 class ReviewImage(models.Model):
     review = models.ForeignKey(Review,on_delete=models.CASCADE)

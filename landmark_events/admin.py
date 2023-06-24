@@ -9,7 +9,7 @@ class EventAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'landmarkObject',
                     'isMain', 'created', 'active']
     list_display_links = ['id', 'name', 'landmarkObject', 'created']
-    list_filter = ['isMain', 'created', 'active']
+    list_filter = ['isMain','is_eternel', 'created', 'active']
 
 
 admin.site.register(LandmarkEvent, EventAdmin)

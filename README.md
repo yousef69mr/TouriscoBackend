@@ -60,3 +60,10 @@
 ### 7.1.5 version :
 
 1. return user object in review object
+
+### 7.2 version :
+
+1. make review api with images
+2. add coordinates to landmark Model
+3. add Many to Many relation between landmark and tourism category
+4. add eternel feature to event Model

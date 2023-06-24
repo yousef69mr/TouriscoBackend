@@ -39,65 +39,12 @@ def get_all_string_attributes_in_Django_model(model):
     return string_attributes
 
 
-# def translate_django_model(model, language):
-#     """Translates a Django model into another language using googletrans.
-
-#     Args:
-#         model (Django Model): The model to be translated.
-#         language (str): The language to translate the model into.
-
-#     Returns:
-#         The translated model.
-#     """
-#     fields = get_all_string_attributes_in_Django_model(model)
-#     # print(fields, language,model.__getattribute__(fields[0]))
-#     translator = Translator()
-#     translated_model = model
-#     print(translated_model)
-#     for field in fields:
-#         translated_field = translator.translate(
-#             getattr(translated_model, field), dest=language)
-#         # setattr(translated_model, field, translated_field)
-#         print(field, translated_field)
-#     # translated_model = translator.translate("model", dest=language)
-#     return translated_model
-
-# def translate_django_model(model, language):
-#     """
-#     Translates each attribute in a specific Django model into another language using googletrans.
-
-#     Parameters:
-#     model (Django Model): The Django model to be translated.
-#     language (str): The language to translate the model into.
-
-#     Returns:
-#     model (Django Model): The translated Django model.
-#     """
-#     translator = Translator()
-#     # print(model)
-#     fields = get_all_string_attributes_in_Django_model(model)
-#     print("/********************************/")
-#     print(fields, language)
-
-#     for field in fields:
-#         # print("########")
-#         if field != 'id':
-#             # print(type(getattr(model, field)))
-
-#             translated_field = translator.translate(
-#                 str(getattr(model, field, None)).strip(), dest=language).text
-
-#             setattr(model, field, translated_field)
-#             # print(field, getattr(model, field))
-#     # print("/********************************/")
-#     return model
-
 def translate_django_model(model_instance, target_language):
     translator = Translator()
 
     for field in model_instance._meta.fields:
         if isinstance(field, models.CharField) or isinstance(field, models.TextField):
-            print(field)
+            # print(field)
             value = getattr(model_instance, field.name)
             if value:
                 translated_value = translator.translate(value, dest=target_language).text
@@ -151,3 +98,13 @@ def invertedIndex(models):
                     else:
                         inverted_index[term] = 1
     return inverted_index
+
+
+import re
+
+def extract_coordinates(embedded_link):
+    matches = re.findall(r"!2d([-+]?\d+\.\d+)!3d([-+]?\d+\.\d+)", embedded_link)
+    if matches:
+        return float(matches[0][1]), float(matches[0][0])
+    else:
+        return None

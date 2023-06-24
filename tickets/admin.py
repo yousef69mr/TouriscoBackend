@@ -8,7 +8,7 @@ class TicketAdmin(admin.ModelAdmin):
     ordering = ['id']
     list_display = ['id', 'name', 'price', 'eventObject', 'created', 'active']
     list_display_links = ['id', 'name', 'price', 'created']
-    list_filter = ['price', 'created', 'active']
+    list_filter = ['created', 'active']
 
 
 admin.site.register(Ticket, TicketAdmin)

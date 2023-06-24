@@ -7,8 +7,9 @@ from django.contrib.contenttypes.models import ContentType
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,IsAuthenticated)
 from system.serializers import ImageSerializer
 from system.models import Image
-from reviews.serializers import ReviewSerializer
+from reviews.serializers import ReviewSerializer,ReviewImagesSerializer
 from reviews.models import Review
+from categories.models import TourismCategory
 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -17,7 +18,8 @@ from .serializers import (
     LandmarkSerializer,
     LandmarksSerializer,
     LandmarkImagesSerializer,
-    LandmarkReviewsSerializer
+    LandmarkReviewsSerializer,
+    LandmarkTourismCategorySerializer
 )
 from .models import (
     Language,
@@ -156,7 +158,6 @@ class LandmarkListView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
 class LandmarkInSpecificGovernorateView(APIView):
     lookup_field = ['lang_code', 'landmark_id']
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -186,7 +187,6 @@ class LandmarkWithSpecificTourismCategoryView(APIView):
         serializer = LandmarksSerializer(langlandmarks,many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 class LandmarkWithSpecificTypeCategoryView(APIView):
     # lookup_field = ['lang_code', 'landmark_id']
@@ -224,6 +224,7 @@ class LandmarkView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+    
 class LandmarkCoreListView(APIView):
     permission_classes=[IsAuthenticatedOrReadOnly]
     def get(self, request, format=None):
@@ -233,7 +234,6 @@ class LandmarkCoreListView(APIView):
         serializer = LandmarkSerializer(landmarks, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
     def post(self, request, format=None):
         try:
             copy_data = request.data.copy()
@@ -242,48 +242,71 @@ class LandmarkCoreListView(APIView):
 
             if mainserializer.is_valid():
                 mainserializer.save()
-                # print('\n\n\ni\n\n\n')
 
-                landmark = get_object_or_404(Landmark, id=mainserializer.data.get("id"))
-                # print(landmark)
-                # landmark = get_object_or_404(
-                #     Landmark, id=17)
+                landmark = Landmark.objects.get(id=mainserializer.data.get("id"))
 
-                # print(event, "\n\n\n")
-                try:
-                    languages = Language.objects.all()
-                    # request_data_copy.pop('image')
-                    request.data.pop('image',None)
-                    request_data_copy = request.data.copy()
-                    # print(request_data_copy)
-                    # print(request_data_copy)
-                    # request_data_copy['image']=request.data['image']
-                    request_data_copy['landmarkObject'] = landmark.id
-                    # print(request_data_copy)
-                    landmarklangVersions = []
-                    landmarklangVersionsErrors = []
-                    for language in languages:
-                        request_data_copy['lang'] = language.id
-                        # print(request.data, "\n\n")
-                        serializer = LandmarksSerializer(data=request_data_copy)
+                languages = Language.objects.all()
+                request_data_copy = request.data.copy()
+                request_data_copy.pop('image', None)
+                
+                # request_data_copy['tourism_categories'] = 1,2,3
+                tourism_categories_list = request_data_copy.pop('tourism_categories',[])
 
-                        if serializer.is_valid():
-                            serializer.save()
-                            landmarklangVersions.append(serializer.data)
-                        else:
-                            landmarklangVersionsErrors.append(serializer.errors)
+                if len(tourism_categories_list) == 0:
+                    tourismCategoryObject = request_data_copy.pop('tourismCategoryObject',None)
+                    if tourismCategoryObject is not None:
+                        tourism_categories_list.append(tourismCategoryObject)
 
-                    if len(landmarklangVersionsErrors) > 0:
-                        landmark.delete()
-                        return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
+                if len(tourism_categories_list) > 0:
+                    # print(len(tourism_categories_list))
+                    # print(tourism_categories_list)
+                    # Add the categories to the landmark object
+                    for category_id in tourism_categories_list:
+                        try:
+                            category = TourismCategory.objects.get(id=category_id)
+                        except:
+                            category = None
+
+                        if category is not None :
+                            data = QueryDict(mutable=True)
+                            data['landmarkObject'] = landmark.id
+                            data['categoryObject'] = category.id
+
+                            tourism_categories_serializer = LandmarkTourismCategorySerializer(data=data)
+                            if tourism_categories_serializer.is_valid():
+                                tourism_categories_serializer.save()
+                            
+                
+
+                request_data_copy['landmarkObject'] = landmark.id
+
+                landmarklangVersions = []
+                landmarklangVersionsErrors = []
+
+                for language in languages:
+                    request_data_copy['lang'] = language.id
+                    serializer = LandmarksSerializer(data=request_data_copy)
+
+                    if serializer.is_valid():
+                        serializer.save()
+                        landmarklangVersions.append(serializer.data)
                     else:
-                        return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
-                except Exception as e:
+                        landmarklangVersionsErrors.append(serializer.errors)
+
+                if len(landmarklangVersionsErrors) > 0:
                     landmark.delete()
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                    return Response(landmarklangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response(landmarklangVersions, status=status.HTTP_201_CREATED)
+            else:
+                return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        except KeyError as e:
+            return Response({"error":f"KeyError {e}"},status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
+            del mainserializer
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
+    
 
 class UserLandmarkListView(APIView):
     permission_classes=[IsAuthenticated]
@@ -295,3 +318,87 @@ class UserLandmarkListView(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
+        
+
+class LandmarkReviewsWithImagesView(APIView):
+    
+    permission_classes=[IsAuthenticatedOrReadOnly]
+
+
+    def get(self, request, landmark_id):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        reviews = landmark.reviews.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+    def post(self, request, landmark_id):
+        try:
+            landmark = get_object_or_404(Landmark,id=landmark_id)
+            
+            request_data_copy = request.data.copy()
+            request_data_copy['userObject'] = request.user.id
+           
+            request_data_copy['content_type'] = ContentType.objects.get_for_model(Landmark).id
+            request_data_copy['object_id'] = landmark.id
+            
+            error_list = []
+            
+            # print(request_data_copy)
+            serializer = ReviewSerializer(data=request_data_copy)
+            # print('here')
+            if serializer.is_valid():
+                serializer.save()
+                review = get_object_or_404(Review,id=serializer.data.get('id'))
+                # image.contains_nudity = contains_nudity
+                # print(image)
+                data = QueryDict(mutable=True)
+                data['landmark'] = landmark.id
+                data['review'] = review.id
+                # print(data)
+                landmarkReviewSerializer = LandmarkReviewsSerializer(data=data)
+                if landmarkReviewSerializer.is_valid():
+                    landmarkReviewSerializer.save()
+
+                    # checking image 
+                    image_list = request_data_copy.pop('image_list',[])
+                    image_response = []
+                    if len(image_list) > 0:
+                        for image in image_list:
+                            request_data_copy['image'] = image
+                            # print(request_data_copy)
+                            image_serializer = ImageSerializer(data=request_data_copy)
+                            # print('here')
+                            if image_serializer.is_valid():
+                                image_serializer.save()
+                                image = get_object_or_404(Image,id=image_serializer.data.get('id'))
+                                # image.contains_nudity = contains_nudity
+                                # print(image)
+                                # print('here')
+                                data = QueryDict(mutable=True)
+                                data['review'] = review.id
+                                data['image'] = image.id
+                                
+                                reviewImageSerializer = ReviewImagesSerializer(data=data)
+                                if reviewImageSerializer.is_valid():
+                                    reviewImageSerializer.save()
+                                    image_response.append(serializer.data)
+                                # serialized_data = serializer.data
+                                else:
+                                    error_list.append(reviewImageSerializer.errors)
+                                    image.delete()
+                            else:
+                                error_list.append(image_serializer.errors)
+                            
+
+
+                    # review_response.append(serializer.data)
+
+                    review_serializer = ReviewSerializer(review)
+
+                       
+            if len(error_list)>0:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:        # serialized_data['contains_nudity'] = contains_nudity
+                return Response(review_serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

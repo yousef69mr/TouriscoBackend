@@ -2,15 +2,9 @@ from django.contrib import admin
 
 from .models import (
     Language,
-    Image
-#     Governorate,
-#     GovernorateLanguageBased,
-#     Landmark,
-#     LandmarkLanguageBased,
-#     Ticket,
-#     TicketLanguageBased,
-#     LandmarkEvent,
-#     LandmarkEventLanguageBased
+    Image,
+    Coordinate
+#    
 )
 
 
@@ -34,3 +28,11 @@ class ImageAdmin(admin.ModelAdmin):
     list_display_links = ['id' , 'created']
     list_filter = ['created', 'active']
 admin.site.register(Image,ImageAdmin)
+
+class CoordinateAdmin(admin.ModelAdmin):
+    model = Coordinate
+    ordering = ['id']
+    list_display = ['id','longitude','latitude', 'created', 'active']
+    list_display_links = ['id' , 'created']
+    list_filter = ['created', 'active']
+admin.site.register(Coordinate,CoordinateAdmin)

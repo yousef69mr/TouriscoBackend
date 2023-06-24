@@ -3,7 +3,8 @@ from users.serializers import UserSerializer
 # from nudenet import NudeDetector
 from .models import (
     Language,
-    Image
+    Image,
+    Coordinate
 )
 # from TouriscoBackend.utils import translate_django_model
 
@@ -40,4 +41,11 @@ class ImageSerializer(serializers.ModelSerializer):
         # print(instance)
         return instance
     
+
+
+class CoordinateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coordinate
+        fields = '__all__'
+        read_only_fields = ['id','active']
 

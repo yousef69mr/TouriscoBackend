@@ -3,7 +3,8 @@ from .models import (
     Landmark,
     LandmarkLanguageBased,
     LandmarkImage,
-    LandmarkReview
+    LandmarkReview,
+    LandmarkTourismCategory
 )
 # Register your models here.
 
@@ -50,3 +51,16 @@ class LandmarkReviewAdmin(admin.ModelAdmin):
 
 
 admin.site.register(LandmarkReview, LandmarkReviewAdmin)
+
+
+class LandmarkTourismCategoryAdmin(admin.ModelAdmin):
+    model = LandmarkTourismCategory
+    ordering = ['id']
+    list_display = ['id','landmarkObject','categoryObject', 'created', 'active']
+    list_display_links = ['id','landmarkObject' ,'categoryObject' ,'created']
+    list_filter = ['created', 'active']
+    search_fields=['categoryObject','landmarkObject']
+
+
+admin.site.register(LandmarkTourismCategory, LandmarkTourismCategoryAdmin)
+

@@ -9,7 +9,6 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 
 from .serializers import (
     
-    
     EventSerializer,
     EventsSerializer,
 )
@@ -34,11 +33,14 @@ class LandmarkEventListForSpecificLandmarkView(APIView):
         landmark = get_object_or_404(Landmark, id=landmark_id)
         # events = LandmarkEvent.objects.filter(
         #     landmarkObject=landmark).only('id').all()
-        lang_events = LandmarkEventLanguageBased.objects.filter(lang=language, eventObject__landmarkObject=landmark)
-        # print(events)
-        serializer = EventsSerializer(lang_events, many=True)
+        try:
+            lang_events = LandmarkEventLanguageBased.objects.filter(lang=language, eventObject__landmarkObject=landmark)
+            # print(events)
+            serializer = EventsSerializer(lang_events, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # single Event
 class LandmarkEventView(APIView):
@@ -51,12 +53,14 @@ class LandmarkEventView(APIView):
 
         language = get_object_or_404(Language, code=lang_code)
         event = get_object_or_404(LandmarkEvent, id=event_id)
-        langevent = get_object_or_404(
-            LandmarkEventLanguageBased, eventObject=event, lang=language)
+        langevent = get_object_or_404(LandmarkEventLanguageBased, eventObject=event, lang=language)
         # print(langevent)
-        serializer = EventsSerializer(langevent)
+        try:
+            serializer = EventsSerializer(langevent)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LandmarkEventListView(APIView):
      
@@ -86,40 +90,48 @@ class LandmarkEventCoreListView(APIView):
 
     def post(self, request, format=None):
         # print(request.data)
-        mainserializer = EventSerializer(data=request.data)
-
-        if mainserializer.is_valid():
-            mainserializer.save()
-
-            event = get_object_or_404(
-                LandmarkEvent, id=mainserializer.data.get("id"))
-            # print(event, "\n\n\n")
-            try:
+        try:
+            mainserializer = EventSerializer(data=request.data)
+            
+            if mainserializer.is_valid():
+                mainserializer.save()
+                # print('dlldld')
+                event = get_object_or_404(LandmarkEvent, id=mainserializer.data.get("id"))
+                # print(event, "\n\n\n")
+                
+                
                 languages = Language.objects.all()
             
                 request_data_copy = request.data.copy()
                 request_data_copy['eventObject'] = event.id
-
+                # print('dkddd')
                 eventlangVersions = []
                 eventlangVersionsErrors = []
                 for language in languages:
                     request_data_copy['lang'] = language.id
                     # print(request.data, "\n\n")
+                    # print('dkddd')
                     serializer = EventsSerializer(data=request_data_copy)
-
+                    # print('dkddd')
                     if serializer.is_valid():
                         serializer.save()
+                        # print(serializer)
                         eventlangVersions.append(serializer.data)
+                        # print('21212')
                     else:
                         eventlangVersionsErrors.append(serializer.errors)
 
+                # print("bhbhbhh")
                 if len(eventlangVersionsErrors) > 0:
                     event.delete()
+                    # print('erer')
                     return Response(eventlangVersionsErrors, status=status.HTTP_400_BAD_REQUEST)
                 else:
+                    # print('hhhhhhhhhhhhhhhhh')
                     return Response(eventlangVersions, status=status.HTTP_201_CREATED)
-            except Exception as e:
-                    event.delete()
-                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            
 
-        return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(mainserializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            
+            return Response({"error": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

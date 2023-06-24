@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils import timezone
 # import os
-from categories.models import TourismCategory,TypeCategory,TypeCategoryLanguageBased
-from system.models import Language,Image
+from categories.models import TourismCategory,TypeCategory,TypeCategoryLanguageBased,TourismCategoryLanguageBased
+from system.models import Language,Image,Coordinate
 from governorates.models import Governorate
 from reviews.models import Review
 from users.models import User
@@ -50,9 +50,10 @@ class Landmark(models.Model):
     user_created_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
     area = models.FloatField(help_text="Squared Area in metre")
     location_link = models.URLField( help_text="google maps link ",max_length=500)
+    coordinates = models.OneToOneField(Coordinate,on_delete=models.PROTECT,null=True)
     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
-    
-    height = models.FloatField(default=1, help_text="height in metre")
+    tourism_categories = models.ManyToManyField(TourismCategory,through='LandmarkTourismCategory',related_name='landmark_tourism_categories')
+    height = models.FloatField(blank=True, help_text="height in metre")
     foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date")
     foundationDateEra = models.CharField(choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
@@ -111,8 +112,6 @@ class LandmarkLanguageBased(models.Model):
     description = models.TextField()
     category_type = models.ForeignKey(TypeCategoryLanguageBased, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="category type")
     address = models.TextField(max_length=500)
-    # foreignersPrice = models.FloatField(help_text="price in Egyptian Pound")
-    # localPrice = models.FloatField(help_text="price in Egyptian Pound")
 
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
@@ -123,7 +122,6 @@ class LandmarkLanguageBased(models.Model):
     
     def get_category_type(self):
         return TypeCategoryLanguageBased.objects.get(categoryObject=self.landmarkObject.typeCategoryObject,lang=self.lang)
-    
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -134,12 +132,19 @@ class LandmarkLanguageBased(models.Model):
         return f'{self.title} => {self.lang.name}'
     
 # many to many relation not used
-# class TourismTypesLandmarkList(models.Model):
-#     landmarkObject = models.ForeignKey(
-#         Landmark, on_delete=models.CASCADE, verbose_name="landmark")
-#     categoryObject = models.ForeignKey(
-#         TourismCategory, on_delete=models.CASCADE, verbose_name="core")
+class LandmarkTourismCategory(models.Model):
+    landmarkObject = models.ForeignKey(Landmark, on_delete=models.CASCADE, verbose_name="landmark")
+    categoryObject = models.ForeignKey(TourismCategory, on_delete=models.CASCADE, verbose_name="Tourism Category")
+    created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
+    active = models.BooleanField(default=True)
 
-#     def __str__(self):
-#         return f'{self.landmarkObject.name} == {self.categoryObject.name}'
+    class Meta:
+        ordering = ['id']
+        unique_together = (("landmarkObject", "categoryObject"),)
+        verbose_name_plural = "Landmark Tourism Categories" 
+        verbose_name = "Landmark Tourism Category" 
+
+
+    def __str__(self):
+        return f'{self.landmarkObject.name} == {self.categoryObject.name}'
 

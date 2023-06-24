@@ -8,6 +8,7 @@ class GovernorateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Governorate
         fields = '__all__'
+        read_only_fields = ['id','active']
 
 
 # language based model
@@ -18,6 +19,7 @@ class GovernoratesSerializer(serializers.ModelSerializer):
     class Meta:
         model = GovernorateLanguageBased
         fields = '__all__'
+        read_only_fields = ['id','active']
         # lookup_field = 'lang_code'
         extra_kwargs = {
             # 'url': {'lookup_field': 'lang_code'}

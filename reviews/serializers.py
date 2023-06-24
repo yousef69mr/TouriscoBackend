@@ -9,6 +9,7 @@ class ReviewImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model= ReviewImage
         fields = '__all__'
+        read_only_fields = ['id','active']
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -18,6 +19,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model= Review
         fields = '__all__'
         read_only_fields = ['id','active']
-        # extra_kwargs = {
-        #     'content_type': {'write_only': True},
-        # }
+        extra_kwargs = {
+            'content_type': {'write_only': True},
+            'userObject': {'write_only': True}
+        }

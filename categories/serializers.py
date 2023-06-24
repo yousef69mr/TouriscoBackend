@@ -1,6 +1,5 @@
 
 from rest_framework import serializers
-from landmarks.serializers import LandmarkSerializer
 from .models import (
     TourismCategoryLanguageBased,
     TourismCategory,
