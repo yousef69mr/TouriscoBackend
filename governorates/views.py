@@ -29,7 +29,7 @@ class GovernorateListView(APIView):
 
         language = get_object_or_404(Language, code=lang_code)
 
-        governorates = GovernorateLanguageBased.objects.all().filter(lang=language)
+        governorates = GovernorateLanguageBased.objects.filter(lang=language).order_by('-govObject__population')
         # print(governorates)
         serializer = GovernoratesSerializer(governorates, many=True)
 
@@ -63,8 +63,7 @@ class GovernorateView(APIView):
 
         language = get_object_or_404(Language, code=lang_code)
         governorate = get_object_or_404(Governorate, id=governorate_id)
-        langGovernorate = get_object_or_404(
-            GovernorateLanguageBased, govObject=governorate, lang=language)
+        langGovernorate = get_object_or_404(GovernorateLanguageBased, govObject=governorate, lang=language)
         print(langGovernorate)
         serializer = GovernoratesSerializer(langGovernorate)
 

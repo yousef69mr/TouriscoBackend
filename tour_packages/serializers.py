@@ -1,12 +1,14 @@
 from rest_framework import serializers
 from landmark_events.serializers import EventSerializer
 from .models import TourPackage
+from categories.serializers import TourismCategorySerializer
 from system.serializers import LanguageSerializer
 
 
 class TourPackageSerializer(serializers.ModelSerializer):
-    # event = EventSerializer(source='eventObject',read_only=True)
-
+    events = EventSerializer(many=True,read_only=True)
+    tourism_categories = TourismCategorySerializer(many=True,read_only=True)
+    
     class Meta:
         model = TourPackage
         fields = '__all__'

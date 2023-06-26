@@ -10,8 +10,7 @@ class ReviewImagesSerializer(serializers.ModelSerializer):
         model= ReviewImage
         fields = '__all__'
         read_only_fields = ['id','active']
-
-
+        
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserReviewSerializer(source='userObject',read_only=True)
     images = ImageSerializer(many=True,read_only=True)
