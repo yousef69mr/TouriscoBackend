@@ -67,9 +67,11 @@
 2. add coordinates to landmark Model
 3. add Many to Many relation between landmark and tourism category
 4. add eternel feature to event Model
-### 7.2.1 version :
+
+#### 7.2.1 version :
 
 1. return governorates sorted by population
 
+#### 7.2.2 version :
 
-
+1. serve media in production when debug is false
