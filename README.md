@@ -75,3 +75,7 @@
 #### 7.2.2 version :
 
 1. serve media in production when debug is false
+
+### 7.3 version :
+
+1. add create package algorithm based on budget

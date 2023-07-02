@@ -35,7 +35,7 @@ class LandmarkImageAdmin(admin.ModelAdmin):
     model = LandmarkImage
     ordering = ['id']
     list_display = ['id','landmark','image', 'created', 'active']
-    list_display_links = ['id','landmark' , 'created']
+    list_display_links = ['id','landmark','image' , 'created']
     list_filter = ['created', 'active']
 
 

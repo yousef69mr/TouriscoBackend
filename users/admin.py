@@ -23,7 +23,7 @@ class allUsersAdmin(UserAdmin):
         }),
         ('Personal info', {
             'classes': ('wide',),
-            'fields': ('profile_image', 'nationality', 'gender')
+            'fields': ('profile_image', 'nationality', 'gender','birth_date')
         }),
         ('Contact info', {
             'classes': ('wide',),

@@ -104,7 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             'profile_images\\'+str(y)+'\\'+str(m)+'\\'+str(d)+'\\')
         image_url = os.path.join(
             'media/profile_images/'+str(y)+'/'+str(m)+'/'+str(d)+'/', file_name)
-
+    
         print(image_directory)
         full_image_directory = os.path.join(
             settings.MEDIA_ROOT, image_directory)

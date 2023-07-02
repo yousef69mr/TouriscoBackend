@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TourPackage,TourPackageTourismCategory
+from .models import TourPackage,TourPackageTourismCategory,TourPackageTicket,TourPackageLandmarkEvent
 # Register your models here.
 
 class TourPackageAdmin(admin.ModelAdmin):
@@ -23,3 +23,27 @@ class TourPackageTourismCategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(TourPackageTourismCategory, TourPackageTourismCategoryAdmin)
+
+
+class TourPackageTicketAdmin(admin.ModelAdmin):
+    model = TourPackageTicket
+    ordering = ['id']
+    list_display = ['id', 'tourpackage','ticket', 'created', 'active']
+    list_display_links = ['id', 'tourpackage', 'ticket', 'created']
+    list_filter = ['created', 'active']
+    search_fields = ['tourpackage__title','user_created_by']
+
+
+admin.site.register(TourPackageTicket, TourPackageTicketAdmin)
+
+
+class TourPackageLandmarkEventAdmin(admin.ModelAdmin):
+    model = TourPackageLandmarkEvent
+    ordering = ['id']
+    list_display = ['id', 'tourpackage','event', 'created', 'active']
+    list_display_links = ['id', 'tourpackage', 'event', 'created']
+    list_filter = ['created', 'active']
+    search_fields = ['tourpackage__title','user_created_by']
+
+
+admin.site.register(TourPackageLandmarkEvent, TourPackageLandmarkEventAdmin)
