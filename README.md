@@ -88,3 +88,7 @@
 ##### 7.3.1.1 version :
 
 1. change start and end datetime to date in create package
+
+#### 7.3.2 version :
+
+1. fix create package bugs

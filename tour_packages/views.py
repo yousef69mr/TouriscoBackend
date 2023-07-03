@@ -155,7 +155,9 @@ def generate_tourpackage_data(request):
     # if 
     user = User.objects.get(id=request.user.id)
     request_data_copy = request.data.copy()
-    budget_target = request_data_copy.pop('budget_target',0)
+    print(request_data_copy)
+    budget_target = float(request_data_copy.get('budget_target',0))
+    print(type(budget_target))
     today = date.today()  # get current date as a date object
     # default_start_date = datetime.combine(today, datetime.min.time())  # convert to datetime object with minimum time
     if user.nationality == 'EG':
@@ -182,27 +184,34 @@ def generate_tourpackage_data(request):
         else:
             ticket_class_name ='Foreigner_Student'
         
-    preffered_tourism = request_data_copy.pop('tourism_categories',[])
+    preffered_tourism = request_data_copy.get('tourism_categories',[])
     if len(preffered_tourism)==0:
         preffered_tourism = TourismCategory.objects.all().values_list('id',flat=True)
 
     print(preffered_tourism)
 
-    startDate = request_data_copy.pop('start_date',timezone.now())
-    endDate = request_data_copy.pop('end_date',None)
+    startDate = request_data_copy.get('start_date',timezone.now())
+    endDate = request_data_copy.get('end_date',None)
 
     if endDate is None:
         raise ValueError('end_date is required field')
 
     
-    # print(startDate)
-    # print(endDate)
+    print(startDate)
+    print(endDate)
+
+    print(str(endDate))
+    print(type(endDate))
+
+    
+
 
     # convert the string objects to datetime objects
-    startDate = datetime.strptime(startDate, '%Y-%m-%d')
-    endDate = datetime.strptime(endDate, '%Y-%m-%d')
-    package_duration = (endDate - startDate)
-    print(package_duration)
+    # startDate = datetime.strptime(str(startDate), '%Y-%m-%d')
+    # endDate = datetime.strptime(str(endDate), '%Y-%m-%d')
+    # print('dsd')
+    # package_duration = (endDate - startDate)
+    # print(package_duration)
 
     tickets_for_user = Ticket.objects.filter(ticketClassObject__name=ticket_class_name,eventObject__start_date__lte=startDate,eventObject__end_date__gte=endDate)
     # tickets_for_user = Ticket.objects.all()
@@ -262,7 +271,10 @@ def generate_tourpackage_data(request):
     tickets_list = selected_tickets.values_list('id',flat=True).distinct()
     # print(event_ids)
     # events = LandmarkEvent.objects.filter(id__in=event_ids)
-    title = request_data_copy.pop('title','')
+    title = request_data_copy.get('title',None)
+    if title is None or len(title)==0:
+        title = 'Tourisco'
+
     package_data = QueryDict(mutable=True)
     package_data['title'] = title
     package_data['package_maximium_budget'] = budget_target
