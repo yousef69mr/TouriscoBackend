@@ -199,8 +199,8 @@ def generate_tourpackage_data(request):
     # print(endDate)
 
     # convert the string objects to datetime objects
-    startDate = datetime.strptime(startDate, '%Y-%m-%d %H:%M:%S')
-    endDate = datetime.strptime(endDate, '%Y-%m-%d %H:%M:%S')
+    startDate = datetime.strptime(startDate, '%Y-%m-%d')
+    endDate = datetime.strptime(endDate, '%Y-%m-%d')
     package_duration = (endDate - startDate)
     print(package_duration)
 

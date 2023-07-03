@@ -80,7 +80,11 @@
 
 1. add create package algorithm based on budget
 
-### 7.3.1 version :
+#### 7.3.1 version :
 
 1. update packages viewset for creating new package
 2. sort landmarks by latest
+
+##### 7.3.1.1 version :
+
+1. change start and end datetime to date in create package
