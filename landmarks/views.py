@@ -151,12 +151,15 @@ class LandmarkListView(APIView):
     def get(self, request, lang_code, format=None):
 
         language = get_object_or_404(Language, code=lang_code)
+        try:
+                
+            landmarks = LandmarkLanguageBased.objects.filter(lang=language).order_by('-landmarkObject__created')
+            # print(governorates)
+            serializer = LandmarksSerializer(landmarks, many=True)
 
-        landmarks = LandmarkLanguageBased.objects.all().filter(lang=language).order_by('landmarkObject__name')
-        # print(governorates)
-        serializer = LandmarksSerializer(landmarks, many=True)
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e :
+            return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
 
 class LandmarkInSpecificGovernorateView(APIView):
     lookup_field = ['lang_code', 'landmark_id']

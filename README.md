@@ -79,3 +79,8 @@
 ### 7.3 version :
 
 1. add create package algorithm based on budget
+
+### 7.3.1 version :
+
+1. update packages viewset for creating new package
+2. sort landmarks by latest

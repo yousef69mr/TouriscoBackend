@@ -154,7 +154,8 @@ def generate_tourpackage_data(request):
     #     user = User.objects.get(id=request.user.id)
     # if 
     user = User.objects.get(id=request.user.id)
-    budget_target = request.data.pop('budget_target',0)
+    request_data_copy = request.data.copy()
+    budget_target = request_data_copy.pop('budget_target',0)
     today = date.today()  # get current date as a date object
     # default_start_date = datetime.combine(today, datetime.min.time())  # convert to datetime object with minimum time
     if user.nationality == 'EG':
@@ -181,14 +182,14 @@ def generate_tourpackage_data(request):
         else:
             ticket_class_name ='Foreigner_Student'
         
-    preffered_tourism = request.data.pop('tourism_categories',[])
+    preffered_tourism = request_data_copy.pop('tourism_categories',[])
     if len(preffered_tourism)==0:
         preffered_tourism = TourismCategory.objects.all().values_list('id',flat=True)
 
     print(preffered_tourism)
 
-    startDate = request.data.pop('start_date',timezone.now())
-    endDate = request.data.pop('end_date',None)
+    startDate = request_data_copy.pop('start_date',timezone.now())
+    endDate = request_data_copy.pop('end_date',None)
 
     if endDate is None:
         raise ValueError('end_date is required field')
@@ -261,9 +262,9 @@ def generate_tourpackage_data(request):
     tickets_list = selected_tickets.values_list('id',flat=True).distinct()
     # print(event_ids)
     # events = LandmarkEvent.objects.filter(id__in=event_ids)
-
+    title = request_data_copy.pop('title','')
     package_data = QueryDict(mutable=True)
-    package_data['title'] = request.data.pop('title','')
+    package_data['title'] = title
     package_data['package_maximium_budget'] = budget_target
     package_data['events'] = list(event_ids)
     package_data['tickets'] = list(tickets_list)
