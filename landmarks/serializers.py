@@ -17,7 +17,7 @@ class LandmarkSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True,read_only=True)
     reviews = ReviewSerializer(many=True,read_only=True)
 
-    # tourism_categories = TourismCategorySerializer(many=True,read_only=True)
+    tourism_categories = TourismCategorySerializer(many=True,read_only=True)
 
     class Meta:
         model = Landmark

@@ -103,7 +103,12 @@
 
 1. area and height not required
 
-##### 7.4 version :
+### 7.4 version :
 
 1. modify chatbot algorithm
 2. add remommandation for packages , define landmarks
+
+#### 7.4.1 version :
+
+1. serialize landmark tourism_categories
+2. modify landmark create api

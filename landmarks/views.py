@@ -283,10 +283,10 @@ class LandmarkCoreListView(APIView):
                 request_data_copy.pop('image', None)
                 
                 # request_data_copy['tourism_categories'] = 1,2,3
-                tourism_categories_list = request_data_copy.pop('tourism_categories',[])
+                tourism_categories_list = request_data_copy.get('tourism_categories',[])
 
                 if len(tourism_categories_list) == 0:
-                    tourismCategoryObject = request_data_copy.pop('tourismCategoryObject',None)
+                    tourismCategoryObject = request_data_copy.get('tourismCategoryObject',None)
                     if tourismCategoryObject is not None:
                         tourism_categories_list.append(tourismCategoryObject)
 
