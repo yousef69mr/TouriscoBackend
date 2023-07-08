@@ -23,7 +23,7 @@ class EventSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        # print(validated_data,"\n\n\n\n")
+        print(validated_data,"\n\n\n\n")
         landmark = validated_data.pop('landmarkObject', None)
         is_eternel = validated_data.pop('is_eternel', True)
         start_date = validated_data.pop('start_date', None)
