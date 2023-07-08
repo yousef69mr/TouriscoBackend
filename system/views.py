@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser,IsAuthenticatedOrReadOnly
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from TouriscoBackend.utils import isInteger
 
 # import google.cloud.dialogflow_v2 as dialogflow
 from google.api_core.exceptions import GoogleAPIError
@@ -15,6 +16,9 @@ from TouriscoBackend.settings import BASE_DIR
 
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404, get_list_or_404
+
+from landmarks.models import LandmarkLanguageBased,Landmark,LandmarkTourismCategory
+from categories.models import TourismCategoryLanguageBased,TourismCategory
 
 from .serializers import (
     ImageSerializer,
@@ -81,16 +85,18 @@ class ChatbotView(APIView):
         agent_language_code = 'en'
         from googletrans import Translator
         translator=Translator()
-        desired_language=request.POST.get('language_code','ar')
-        input_text = request.POST.get('message','')
-        input_text = translator.translate(text=input_text,dest=agent_language_code).text
+        print(request.data)
+        desired_language=request.data.get('language_code','ar')
+        input_text = request.data.get('message','')
+        # print(input_text)
+        input_text = translator.translate(text=str(input_text),dest=agent_language_code).text
         print(input_text)
         try:
             
             GOOGLE_AUTHENTICATION_FILE_NAME = "tourisco-494f889ff6ac.json"
             current_directory = os.path.dirname(os.path.realpath(__file__))
             path = os.path.join(current_directory, GOOGLE_AUTHENTICATION_FILE_NAME)
-            print(path)
+            # print(path)
             os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path
 
             GOOGLE_PROJECT_ID = "tourisco"
@@ -134,28 +140,170 @@ class ChatbotView(APIView):
         except Exception as e:
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
 
+
 def detect_intent_with_parameters(project_id, session_id, query_params, language_code, user_input):
-    """Returns the result of detect intent with texts as inputs.
-    Using the same `session_id` between requests allows continuation
-    of the conversaion."""
+    import random
+    defination_responses = ["{title} is {defination}","Defination of {title} is {defination}"]
+    recommendation_responses = ["you should visit {places}","{places} should be your next destination"]
+    fallback_responses = ["Sorry, I couldn't find any {details} for {subject}."]
     session_client = dialogflow.SessionsClient()
-
     session = session_client.session_path(project_id, session_id)
-    print('Session path: {}\n'.format(session))
-
-    #text = "this is as test"
-    text = user_input
-
-    text_input = dialogflow.types.TextInput(
-        text=text, language_code=language_code)
-
+    text_input = dialogflow.types.TextInput(text=user_input, language_code=language_code)
     query_input = dialogflow.types.QueryInput(text=text_input)
 
+    #  # Construct the DetectIntentRequest object
+    # request = dialogflow.types.DetectIntentRequest(
+    #     session=session,
+    #     query_input=query_input,
+    #     query_params=query_params
+    # )
+
+    # Send the request to Dialogflow
     response = session_client.detect_intent(
-        session=session, query_input=query_input,
+        session=session,
+        query_input=query_input,
         query_params=query_params
     )
 
+    # Extract intent and entities from the response
+    query_result = response.query_result
+    intent = query_result.intent.display_name
+    parameters = query_result.parameters
+    
+
+
+    # # Process entities based on intent
+    # if intent == 'recommend_landmarks':
+    #     if 'governorate' in parameters.fields:
+    #         city = parameters.fields['city'].string_value
+    #         landmarks = LandmarkLanguageBased.objects.filter(location=city)
+    #         if landmarks.exists():
+    #             landmark_names = [l.name for l in landmarks]
+    #             parameters.fields['city'].ClearField('string_value')
+    #             parameters.fields['landmarks'].ClearField('string_value')
+    #             parameters.fields['landmarks'].string_value.extend(landmark_names)
+    #         else:
+    #             response_text = f"Sorry, I couldn't find any landmarks for {city}."
+    #             query_result.fulfillment_text = response_text
+    #             return response
+
+    if intent == 'define_tourism_category':
+        # print('parameters',parameters.fields)
+        if 'tourism-category-title' in parameters.fields:
+            category_title = parameters.fields['tourism-category-title'].string_value
+            category_obj = TourismCategory.objects.filter(name=category_title.title().replace(" ", "_")).first()
+            if category_obj:
+                tourism_category = TourismCategoryLanguageBased.objects.filter(lang__code=language_code, categoryObject=category_obj).first()
+                if tourism_category:
+                    parameters.fields['tourism-category-description'].ClearField('string_value')
+                    # print('parameters',parameters.fields)
+                    parameters.fields['tourism-category-description'].string_value = tourism_category.description
+                    # print('parameters',parameters.fields)
+                    
+                    response_text = random.choice(defination_responses).format(title=tourism_category.title,defination=tourism_category.description)
+                    query_result.fulfillment_text = response_text
+                    return response
+                else:
+                    response_text = random.choice(fallback_responses).format(details="details",subject=tourism_category.title)
+                    query_result.fulfillment_text = response_text
+                    return response
+                
+    elif intent == 'recommend_landmarks':
+        print('parameters',parameters.fields)
+        location_type = parameters.fields['object-type'].string_value
+        print(location_type)
+        
+        # check number of objects to return
+        if location_type:
+            if 'number' in parameters.fields and isInteger(parameters.fields['number'].number_value):
+                landmark_number = int(parameters.fields['number'].number_value)
+                if landmark_number==0:
+                    landmark_number = 3
+                print(landmark_number)
+            else:
+                landmark_number = 3
+        # elif int(location_type[0]):
+        #     landmark_number = int(location_type[0])
+        else:
+            landmark_number = 1
+            
+        if 'tourism-category-title' in parameters.fields and len(parameters.fields['tourism-category-title'].list_value)>0:
+            category_title_list = parameters.fields['tourism-category-title'].list_value
+            
+            # print(category_title_list)
+            category_titles = [category.title().replace(" ","_") for category in category_title_list]
+            # print(category_titles)
+            categories =TourismCategory.objects.filter(name__in=category_titles)
+            print(categories)
+            # landmark_obj = Landmark.objects.filter(name_icontains=landmark_name.title().replace(" ", "_")).first()
+            
+            
+            
+            landmarks = LandmarkLanguageBased.objects.filter(lang__code=language_code,landmarkObject__tourism_categories__in=categories).order_by('-landmarkObject__num_of_views')[:landmark_number]
+            print(landmarks)
+            print(landmark_number)
+            
+        else:
+            landmarks = LandmarkLanguageBased.objects.filter(lang__code=language_code).order_by('-landmarkObject__num_of_views')[:landmark_number]
+            print(landmarks)
+            print(landmark_number)
+        
+
+        # return result
+        if landmarks:
+            landmark_names = ', '.join([landmark.title for landmark in landmarks])
+            print(landmark_names)
+            response_text = random.choice(recommendation_responses).format(places=landmark_names)
+            query_result.fulfillment_text = response_text
+            return response
+        else:
+            response_text = random.choice(fallback_responses).format(details=location_type,subject=category_title_list)
+            query_result.fulfillment_text = response_text
+            return response
+
+                # landmark = LandmarkLanguageBased.objects.filter(lang__code=language_code, landmarkObject=landmark_obj).first()
+                # if landmark:
+                #     # parameters.fields['tourism-category-description'].ClearField('string_value')
+                #     # # print('parameters',parameters.fields)
+                #     # parameters.fields['tourism-category-description'].string_value = landmark.description
+                #     # print('parameters',parameters.fields)
+                    
+                #     response_text = random.choice(defination_responses).format(title=landmark.title,defination=landmark.description)
+                #     query_result.fulfillment_text = response_text
+                #     return response
+                # else:
+                #     response_text = f"Sorry, I couldn't find any details for {landmark_name}."
+                #     query_result.fulfillment_text = response_text
+                #     return response
+
+
+
+    # Send the updated parameters back to Dialogflow
+    # Create a new QueryParameters object with the updated parameters
+    # print('parameters',parameters.fields)
+    # print(response)
+    # Create a new detect_intent_request message with the updated parameters
+    # Create a new DetectIntentRequest message with the updated parameters
+    # detect_intent_request = dialogflow.types.DetectIntentRequest(
+    #     session=session,
+    #     query_input=query_input,
+    #     query_params=dialogflow.types.QueryParameters(
+    #         contexts=query_result.output_contexts
+    #     ),
+    #     input=dialogflow.types.QueryInput(
+    #         text=text_input,
+    #         parameters=parameters
+    #     )
+    # )
+
+    # # Send the updated parameters back to Dialogflow
+    # response = session_client.detect_intent(
+    #     request=detect_intent_request
+    # )
+
+    # query_params = {"contexts": query_result.output_contexts}
+    # query_input = dialogflow.types.QueryInput(text=text_input)
+    # response = session_client.detect_intent(session=session, query_input=query_input, query_params=query_params)
     print('=' * 20)
     print('Query text: {}'.format(response.query_result.query_text))
     print('Detected intent: {} (confidence: {})\n'.format(
@@ -163,9 +311,108 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
         response.query_result.intent_detection_confidence))
     print('Fulfillment text: {}\n'.format(
         response.query_result.fulfillment_text))
-
     return response
-    
+
+
+
+# def detect_intent_with_parameters(project_id, session_id, query_params, language_code, user_input):
+#     session_client = dialogflow.SessionsClient()
+#     session = session_client.session_path(project_id, session_id)
+#     text_input = dialogflow.types.TextInput(text=user_input, language_code=language_code)
+#     query_input = dialogflow.types.QueryInput(text=text_input)
+
+#     # Extract intent and entities from user input
+#     response = session_client.detect_intent(session=session, query_input=query_input, query_params=query_params)
+#     query_result = response.query_result
+#     intent = query_result.intent.display_name
+#     parameters = query_result.parameters
+
+#     # Process entities based on intent
+#     if intent == 'recommend_landmarks':
+#         if 'governorate' in parameters.fields:
+#             city = parameters.fields['city'].string_value
+#             landmarks = LandmarkLanguageBased.objects.filter(location=city)
+#             landmark_names = [l.name for l in landmarks]
+#             parameters.fields['city'].ClearField('string_value')
+#             parameters.fields['landmarks'].ClearField('string_value')
+#             parameters.fields['landmarks'].string_value.extend(landmark_names)
+#     elif intent == 'define_tourism_category':
+#         print('parameters',parameters.fields)
+#         if 'tourism-category-title' in parameters.fields:
+#             category_title = parameters.fields['tourism-category-title'].string_value
+#             category_obj = TourismCategory.objects.filter(name=category_title.title().replace(" ", "_")).first()
+#             if category_obj:
+#                 tourism_category = TourismCategoryLanguageBased.objects.filter(lang__code=language_code, categoryObject=category_obj).first()
+#                 if tourism_category:
+#                     parameters.fields['tourism-category-description'].ClearField('string_value')
+#                     print('parameters',parameters.fields)
+#                     parameters.fields['tourism-category-description'].string_value = tourism_category.description
+#                     print('parameters',parameters.fields)
+#                 else:
+#                     response_text = f"Sorry, I couldn't find any tourism category for {category_title}."
+#                     query_result.fulfillment_text = response_text
+#                     return response
+#         # if 'tourism-category-description' in parameters.fields:
+#         #     # category_desc = parameters.fields['tourism-category-description'].string_value
+#         #     category_title = parameters.fields['tourism-category-title'].string_value
+#         #     print(category_title.title().replace(" ", "_"))
+#         #     tourism_category = TourismCategoryLanguageBased.objects.filter(lang__code=language_code,categoryObject__name=category_title.title().replace(" ", "_")).first()
+#         #     print(tourism_category)
+#         #     if tourism_category:
+#         #         print(tourism_category.description)
+#         #         parameters.fields['tourism-category-description'].ClearField('string_value')
+#         #         parameters.fields['tourism-category-description'].string_value = tourism_category.description
+#         #     else:
+#         #         response_text = f"Sorry, I couldn't find any tourism category for {category_title}."
+#         #         query_result.fulfillment_text = response_text
+#         #         return response
+
+#     # elif intent == 'request_weather':
+#     #     if 'city' in parameters.fields:
+#     #         city = parameters.fields['city'].string_value
+#     #         weather = get_weather(city)
+#     #         parameters.fields['city'].ClearField('string_value')
+#     #         parameters.fields['temperature'].number_value = weather['temperature']
+#     #         parameters.fields['condition'].string_value = weather['condition']
+
+#     # Send updated parameters to Dialogflow
+#     query_params = {"contexts": query_result.output_contexts}
+#     query_input = dialogflow.types.QueryInput(text=text_input, parameters=parameters)
+#     response = session_client.detect_intent(session=session, query_input=query_input, query_params=query_params)
+
+#     return response
+
+from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def dialogflow_webhook(request):
+    req = json.loads(request.body)
+    print(req)
+    intent = req['queryResult']['intent']['displayName']
+    if intent == 'Recommend Landmark':
+        # Get the landmark type and location from the entities
+        landmark_type = req['queryResult']['parameters']['LandmarkType']
+        location = req['queryResult']['parameters']['Location']
+        # Use the landmark type and location to retrieve data from your Django objects
+        # ...
+        # response_text = "I recommend visiting {} in {}".format(landmark_name, location)
+    elif intent == 'define_tourism_category':
+        # Get the landmark type and location from the entities
+        category_type = req['queryResult']['parameters']['LandmarkType']
+        location = req['queryResult']['parameters']['Location']
+        # Use the category type and location to retrieve data from your Django objects
+        # ...
+        response_text = "I recommend visiting {} in {}".format(category_type, location)
+    else:
+        response_text = "I'm sorry, I didn't understand that request."
+    # Return a JSON response with the fulfillment text and entities
+    response = {
+        'fulfillmentText': response_text,
+        'outputContexts': req['queryResult']['outputContexts']
+    }
+    return JsonResponse(response)
 
 
 class DownloadMediaFolderView(APIView):

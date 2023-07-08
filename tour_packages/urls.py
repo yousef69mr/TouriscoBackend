@@ -4,7 +4,8 @@ from .views import(
     MaximiumEventsView,
     TourPackageListView,
     TourPackageView,
-    UserTourPackageListView
+    UserTourPackageListView,
+    IncreaseTourPackageViewsView
 )
 
 urlpatterns = [
@@ -13,6 +14,7 @@ urlpatterns = [
     path('tour_packages_created_by_me/',UserTourPackageListView.as_view(), name='user_tour_packages'),
     path('<str:language_code>/create_tour_package_events/',MaximiumEventsView.as_view()),
     path('tour_packages/<int:tour_package_id>/',TourPackageView.as_view()),
+    path('increace_tour_package_views/<int:tour_package_id>/',IncreaseTourPackageViewsView.as_view()),
     # path('<str:lang_code>/<int:event_id>/tickets/',TicketsForSpecificLandmarkEvent.as_view())
 
 ]

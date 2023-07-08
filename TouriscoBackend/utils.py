@@ -108,3 +108,14 @@ def extract_coordinates(embedded_link):
         return float(matches[0][1]), float(matches[0][0])
     else:
         return None
+    
+
+
+def isInteger(num):
+    try:
+        int(num)
+        # If num can be converted to integer without raising ValueError, then it's a valid number
+        print("Valid Integer")
+        return True
+    except ValueError as e:
+        return False

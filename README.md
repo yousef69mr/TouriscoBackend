@@ -92,3 +92,9 @@
 #### 7.3.2 version :
 
 1. fix create package bugs
+
+#### 7.3.3 version :
+
+1. add num_of_views for landmarks and tour packages
+2. add recommend landmarks in tourism category
+3. add define of tourism category

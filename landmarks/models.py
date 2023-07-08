@@ -48,13 +48,14 @@ class Landmark(models.Model):
     images= models.ManyToManyField(Image,through='LandmarkImage',blank=True)
     reviews = models.ManyToManyField(Review,through='LandmarkReview',blank=True)
     user_created_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
-    area = models.FloatField(help_text="Squared Area in metre")
-    location_link = models.URLField( help_text="google maps link ",max_length=500)
+    area = models.FloatField(help_text="Squared Area in metre",null=True)
+    location_link = models.URLField( help_text="embeded google maps link ",max_length=500)
     coordinates = models.OneToOneField(Coordinate,on_delete=models.PROTECT,null=True)
     govObject = models.ForeignKey(Governorate, on_delete=models.CASCADE)
+    num_of_views = models.PositiveIntegerField(default=0)
     tourism_categories = models.ManyToManyField(TourismCategory,through='LandmarkTourismCategory',related_name='landmark_tourism_categories')
-    height = models.FloatField(blank=True, help_text="height in metre")
-    foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date")
+    height = models.FloatField(null=True,default=None, help_text="height in metre")
+    foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date",null=True)
     foundationDateEra = models.CharField(choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
@@ -68,6 +69,9 @@ class Landmark(models.Model):
     #         os.rename(self.image.path, new_path)
     #         self.image.name = new_path
     #         self.save(update_fields=['image'])
+
+    def increase_views(self):
+        self.num_of_views+=1
 
     def __str__(self):
         return self.name

@@ -10,7 +10,8 @@ from .views import (
     LandmarkImagesView,
     LandmarkReviewsView,
     UserLandmarkListView,
-    LandmarkReviewsWithImagesView
+    LandmarkReviewsWithImagesView,
+    IncreaseLandmarkViewsView
 )
 
 urlpatterns = [
@@ -19,6 +20,8 @@ urlpatterns = [
      path('<str:lang_code>/tourism_category_landmarks/<int:tourism_category_id>/',LandmarkWithSpecificTourismCategoryView.as_view()),
      path('<str:lang_code>/type_category_landmarks/<int:type_category_id>/',LandmarkWithSpecificTypeCategoryView.as_view()),
      # landmarks
+
+     path('increace_landmark_views/<int:landmark_id>/',IncreaseLandmarkViewsView.as_view()),
      path('<str:lang_code>/landmarks/',LandmarkListView.as_view(), name='landmarks'),
      path('<str:lang_code>/landmarks/<int:landmark_id>/',LandmarkView.as_view(), name="landmark"),
      path('landmarks/', LandmarkCoreListView.as_view(), name="landmarks"),

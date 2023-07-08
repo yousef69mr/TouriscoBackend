@@ -11,6 +11,7 @@ from tickets.models import Ticket
 class TourPackage(models.Model):
     title = models.CharField(max_length=150)
     user_created_by = models.ForeignKey(User,on_delete=models.SET_NULL,null=True)
+    num_of_views = models.PositiveIntegerField(default=0)
     tickets = models.ManyToManyField(Ticket,related_name='tickets',through='TourPackageTicket')
     events = models.ManyToManyField(LandmarkEvent,related_name='events',through='TourPackageLandmarkEvent')
     tourism_categories = models.ManyToManyField(TourismCategory,related_name='tourism_categories',through='TourPackageTourismCategory')
@@ -21,6 +22,8 @@ class TourPackage(models.Model):
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
 
+    def increase_views(self):
+        self.num_of_views+=1
     class Meta:
         ordering = ['id']
     

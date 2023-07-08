@@ -46,6 +46,6 @@ class ActiveUserView(APIView):
         user = get_object_or_404(User,id=request.user.id)
         try:
             serializer = UserSerializer(user)
-            return Response(serializer.data,status=status.HTTP_302_FOUND)
+            return Response(serializer.data,status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)

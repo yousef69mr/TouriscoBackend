@@ -207,6 +207,19 @@ class LandmarkWithSpecificTypeCategoryView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class IncreaseLandmarkViewsView(APIView):
+    def post(self, request, landmark_id, format=None):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        print(landmark)
+        try:
+            landmark.increase_views()
+            landmark.save()
+            return Response({'message':"increased successfully"},status=status.HTTP_202_ACCEPTED)
+        except Exception as e:
+            Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 class LandmarkView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
@@ -219,12 +232,29 @@ class LandmarkView(APIView):
         language = get_object_or_404(Language, code=lang_code)
         landmark = get_object_or_404(Landmark, id=landmark_id)
         print(landmark)
-        langlandmark = get_object_or_404(
-            LandmarkLanguageBased, landmarkObject=landmark, lang=language)
+        landmark.increase_views()
+        landmark.save()
+        langlandmark = get_object_or_404(LandmarkLanguageBased, landmarkObject=landmark, lang=language)
         print(langlandmark)
         serializer = LandmarksSerializer(langlandmark)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, landmark_id, format=None):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        try:
+            serializer = LandmarkSerializer(landmark, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, landmark_id, format=None):
+        landmark = get_object_or_404(Landmark, id=landmark_id)
+        landmark.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
     

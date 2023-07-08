@@ -28,11 +28,22 @@ from .models import (
 )
 # Create your views here.
 
+class IncreaseTourPackageViewsView(APIView):
+    def post(self, request, tour_package_id, format=None):
+        package = get_object_or_404(TourPackage, id=tour_package_id)
+        print(package)
+        try:
+            package.increase_views()
+            package.save()
+            return Response({'message':"increased successfully"},status=status.HTTP_202_ACCEPTED)
+        except Exception as e:
+            Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TourPackageView(APIView):
     # queryset = LandmarkLanguageBased.objects.all()
     # serializer_class = LandmarksSerializer
-    lookup_field = ['lang_code', 'landmark_id']
+    lookup_field = ['lang_code', 'tour_package_id']
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, tour_package_id, format=None):
@@ -41,11 +52,30 @@ class TourPackageView(APIView):
         
         print(tour_package)
         try:
+            tour_package.increase_views()
+            tour_package.save()
             serializer = TourPackageSerializer(tour_package)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e :
             return Response({'error':str(e)},status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self, request, tour_package_id, format=None):
+        tour_package = get_object_or_404(TourPackage, id=tour_package_id)
+        try:
+            serializer = TourPackageSerializer(tour_package, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, tour_package_id, format=None):
+        tour_package = get_object_or_404(TourPackage, id=tour_package_id)
+        tour_package.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 
