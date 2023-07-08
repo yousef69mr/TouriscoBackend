@@ -40,6 +40,8 @@ class TicketLanguageBased(models.Model):
     active = models.BooleanField(default=True, blank=False)
 
     def get_category_ticket_class(self):
+        if self.ticket_class_category is None:
+            return None
         return TicketClassCategoryLanguageBased.objects.get(categoryObject=self.ticketObject.ticketClassObject,lang=self.lang)
     
 
