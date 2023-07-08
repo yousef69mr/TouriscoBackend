@@ -59,7 +59,7 @@ class LandmarkTourismCategoryAdmin(admin.ModelAdmin):
     list_display = ['id','landmarkObject','categoryObject', 'created', 'active']
     list_display_links = ['id','landmarkObject' ,'categoryObject' ,'created']
     list_filter = ['created', 'active']
-    search_fields=['categoryObject','landmarkObject']
+    search_fields=['categoryObject__id','landmarkObject__id']
 
 
 admin.site.register(LandmarkTourismCategory, LandmarkTourismCategoryAdmin)

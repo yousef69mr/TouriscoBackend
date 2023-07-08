@@ -31,7 +31,7 @@ class TourPackageTicketAdmin(admin.ModelAdmin):
     list_display = ['id', 'tourpackage','ticket', 'created', 'active']
     list_display_links = ['id', 'tourpackage', 'ticket', 'created']
     list_filter = ['created', 'active']
-    search_fields = ['tourpackage__title','user_created_by']
+    search_fields = ['tourpackage__title','tourpackage__user_created_by']
 
 
 admin.site.register(TourPackageTicket, TourPackageTicketAdmin)
@@ -43,7 +43,7 @@ class TourPackageLandmarkEventAdmin(admin.ModelAdmin):
     list_display = ['id', 'tourpackage','event', 'created', 'active']
     list_display_links = ['id', 'tourpackage', 'event', 'created']
     list_filter = ['created', 'active']
-    search_fields = ['tourpackage__title','user_created_by']
+    search_fields = ['tourpackage__title','tourpackage__user_created_by']
 
 
 admin.site.register(TourPackageLandmarkEvent, TourPackageLandmarkEventAdmin)
