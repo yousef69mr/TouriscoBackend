@@ -19,6 +19,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 
 from landmarks.models import LandmarkLanguageBased,Landmark,LandmarkTourismCategory
 from categories.models import TourismCategoryLanguageBased,TourismCategory
+from tour_packages.models import TourPackage
 
 from .serializers import (
     ImageSerializer,
@@ -187,17 +188,39 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
     #             query_result.fulfillment_text = response_text
     #             return response
 
-    if intent == 'define_tourism_category':
+    # if intent == 'define_tourism_category':
+    #     # print('parameters',parameters.fields)
+    #     if 'tourism-category-title' in parameters.fields:
+    #         category_title = parameters.fields['tourism-category-title'].string_value
+    #         category_obj = TourismCategory.objects.filter(name=category_title.title().replace(" ", "_")).first()
+    #         if category_obj:
+    #             tourism_category = TourismCategoryLanguageBased.objects.filter(lang__code=language_code, categoryObject=category_obj).first()
+    #             if tourism_category:
+    #                 parameters.fields['tourism-category-description'].ClearField('string_value')
+    #                 # print('parameters',parameters.fields)
+    #                 parameters.fields['tourism-category-description'].string_value = tourism_category.description
+    #                 # print('parameters',parameters.fields)
+                    
+    #                 response_text = random.choice(defination_responses).format(title=tourism_category.title,defination=tourism_category.description)
+    #                 query_result.fulfillment_text = response_text
+    #                 return response
+    #             else:
+    #                 response_text = random.choice(fallback_responses).format(details="details",subject=tourism_category.title)
+    #                 query_result.fulfillment_text = response_text
+    #                 return response
+    if intent == 'define_objects':
         # print('parameters',parameters.fields)
-        if 'tourism-category-title' in parameters.fields:
-            category_title = parameters.fields['tourism-category-title'].string_value
-            category_obj = TourismCategory.objects.filter(name=category_title.title().replace(" ", "_")).first()
+        object_title = parameters.fields['object_title'].string_value
+        print("text",object_title)
+        if object_title:
+            # category_title = parameters.fields['tourism-category-title'].string_value
+            category_obj = TourismCategory.objects.filter(name=object_title.title().replace(" ", "_")).first()
             if category_obj:
                 tourism_category = TourismCategoryLanguageBased.objects.filter(lang__code=language_code, categoryObject=category_obj).first()
                 if tourism_category:
-                    parameters.fields['tourism-category-description'].ClearField('string_value')
-                    # print('parameters',parameters.fields)
-                    parameters.fields['tourism-category-description'].string_value = tourism_category.description
+                    # parameters.fields['tourism-category-description'].ClearField('string_value')
+                    # # print('parameters',parameters.fields)
+                    # parameters.fields['tourism-category-description'].string_value = tourism_category.description
                     # print('parameters',parameters.fields)
                     
                     response_text = random.choice(defination_responses).format(title=tourism_category.title,defination=tourism_category.description)
@@ -207,26 +230,45 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
                     response_text = random.choice(fallback_responses).format(details="details",subject=tourism_category.title)
                     query_result.fulfillment_text = response_text
                     return response
-                
-    elif intent == 'recommend_landmarks':
-        print('parameters',parameters.fields)
-        location_type = parameters.fields['object-type'].string_value
-        print(location_type)
-        
-        # check number of objects to return
-        if location_type:
-            if 'number' in parameters.fields and isInteger(parameters.fields['number'].number_value):
-                landmark_number = int(parameters.fields['number'].number_value)
-                if landmark_number==0:
-                    landmark_number = 3
-                print(landmark_number)
             else:
+
+                print(object_title.title().replace(" ", "_"))
+                landmark_obj = Landmark.objects.filter(name=object_title.title().replace(" ", "_")).first()
+                print(landmark_obj)
+                if landmark_obj:
+                    landmark = LandmarkLanguageBased.objects.filter(lang__code=language_code, landmarkObject=landmark_obj).first()
+                    if landmark:
+                        # parameters.fields['tourism-category-description'].ClearField('string_value')
+                        # # print('parameters',parameters.fields)
+                        # parameters.fields['tourism-category-description'].string_value = landmark.description
+                        # print('parameters',parameters.fields)
+                        
+                        response_text = random.choice(defination_responses).format(title=landmark.title,defination=landmark.description)
+                        query_result.fulfillment_text = response_text
+                        return response
+                    else:
+                        response_text = random.choice(fallback_responses).format(details="details",subject=landmark.title)
+                        query_result.fulfillment_text = response_text
+                        return response
+                
+    elif intent == 'recommend_objects':
+        print('parameters',parameters.fields)
+        object_type = parameters.fields['object-type'].string_value
+        print(object_type)
+        objects=None
+        # check number of objects to return
+        
+        if 'number' in parameters.fields and isInteger(parameters.fields['number'].number_value):
+            landmark_number = int(parameters.fields['number'].number_value)
+            if landmark_number==0:
                 landmark_number = 3
-        # elif int(location_type[0]):
-        #     landmark_number = int(location_type[0])
+            print(landmark_number)
         else:
             landmark_number = 1
-            
+        # elif int(location_type[0]):
+        #     landmark_number = int(location_type[0])
+         
+        
         if 'tourism-category-title' in parameters.fields and len(parameters.fields['tourism-category-title'].list_value)>0:
             category_title_list = parameters.fields['tourism-category-title'].list_value
             
@@ -238,26 +280,33 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
             # landmark_obj = Landmark.objects.filter(name_icontains=landmark_name.title().replace(" ", "_")).first()
             
             
-            
-            landmarks = LandmarkLanguageBased.objects.filter(lang__code=language_code,landmarkObject__tourism_categories__in=categories).order_by('-landmarkObject__num_of_views')[:landmark_number]
-            print(landmarks)
+            if object_type == 'landmark':
+
+                objects = LandmarkLanguageBased.objects.filter(lang__code=language_code,landmarkObject__tourism_categories__in=categories).order_by('-landmarkObject__num_of_views')[:landmark_number]
+            elif object_type == 'package':
+                objects = TourPackage.objects.filter(tourism_categories__in=categories).order_by('-num_of_views')[:landmark_number]
+            print(objects)
             print(landmark_number)
             
         else:
-            landmarks = LandmarkLanguageBased.objects.filter(lang__code=language_code).order_by('-landmarkObject__num_of_views')[:landmark_number]
-            print(landmarks)
+            if object_type == 'landmark':
+
+                objects = LandmarkLanguageBased.objects.filter(lang__code=language_code).order_by('-landmarkObject__num_of_views')[:landmark_number]
+            elif object_type == 'package':
+                objects = TourPackage.objects.all().order_by('-num_of_views')[:landmark_number]
+            print(objects)
             print(landmark_number)
         
 
         # return result
-        if landmarks:
-            landmark_names = ', '.join([landmark.title for landmark in landmarks])
-            print(landmark_names)
-            response_text = random.choice(recommendation_responses).format(places=landmark_names)
+        if objects:
+            object_names = ', '.join([object.title for object in objects])
+            print(object_names)
+            response_text = random.choice(recommendation_responses).format(places=object_names)
             query_result.fulfillment_text = response_text
             return response
         else:
-            response_text = random.choice(fallback_responses).format(details=location_type,subject=category_title_list)
+            response_text = random.choice(fallback_responses).format(details=object_type,subject=category_title_list)
             query_result.fulfillment_text = response_text
             return response
 

@@ -100,4 +100,10 @@
 3. add define of tourism category
 
 ##### 7.3.3.1 version :
+
 1. area and height not required
+
+##### 7.4 version :
+
+1. modify chatbot algorithm
+2. add remommandation for packages , define landmarks
