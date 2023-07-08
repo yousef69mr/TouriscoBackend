@@ -153,7 +153,7 @@ class LandmarkListView(APIView):
         language = get_object_or_404(Language, code=lang_code)
         try:
                 
-            landmarks = LandmarkLanguageBased.objects.filter(lang=language).order_by('-landmarkObject__created').order_by('-landmarkObject__num_of_views')
+            landmarks = LandmarkLanguageBased.objects.filter(lang=language).order_by('-landmarkObject__created')
             # print(governorates)
             serializer = LandmarksSerializer(landmarks, many=True)
 
