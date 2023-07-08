@@ -45,10 +45,10 @@ class TicketLanguageBased(models.Model):
         return TicketClassCategoryLanguageBased.objects.get(categoryObject=self.ticketObject.ticketClassObject,lang=self.lang)
     
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not self.ticket_class_category and hasattr(self.ticketObject, 'ticketClassObject'):
-            self.ticket_class_category = self.get_category_ticket_class()
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     if not self.ticket_class_category and hasattr(self.ticketObject, 'ticketClassObject'):
+    #         self.ticket_class_category = self.get_category_ticket_class()
 
     def __str__(self):
-        return f'{self.lang.code} => {self.ticket_class_category.title} ({self.ticketObject.price} LE)'
+        return f'{self.lang.code} => ({self.ticketObject.price} LE)'
