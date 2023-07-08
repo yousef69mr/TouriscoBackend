@@ -209,10 +209,13 @@ def generate_tourpackage_data(request):
             ticket_class_name ='Arab'
         
     else:
-        if (today-user.birth_date).days >= 21:
-            ticket_class_name = 'Foreigner'
+        if user.birth_date:
+            if (today-user.birth_date).days >= 21:
+                ticket_class_name = 'Foreigner'
+            else:
+                ticket_class_name ='Foreigner_Student'
         else:
-            ticket_class_name ='Foreigner_Student'
+            ticket_class_name ='Foreigner'
         
     preffered_tourism = request_data_copy.get('tourism_categories',[])
     if len(preffered_tourism)==0:
