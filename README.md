@@ -113,7 +113,10 @@
 1. serialize landmark tourism_categories
 2. modify landmark create api
 
-
 #### 7.4.1.1 version :
 
 1. modify search fields on packages
+
+#### 7.4.1.4 version :
+
+1. foundation date field

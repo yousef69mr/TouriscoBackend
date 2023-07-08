@@ -55,7 +55,7 @@ class Landmark(models.Model):
     num_of_views = models.PositiveIntegerField(default=0)
     tourism_categories = models.ManyToManyField(TourismCategory,through='LandmarkTourismCategory',related_name='landmark_tourism_categories')
     height = models.FloatField(null=True,blank=True,default=None, help_text="height in metre")
-    foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date",null=True)
+    foundationDate = models.DateField(default=timezone.now, verbose_name="Foundation Date",null=True,blank=True)
     foundationDateEra = models.CharField(choices=ERAS, max_length=3, default='AD', verbose_name="Foundation Date Era")
     created = models.DateTimeField(default=timezone.now, verbose_name="Creation Date")
     active = models.BooleanField(default=True)
