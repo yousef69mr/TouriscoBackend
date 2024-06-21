@@ -16,3 +16,4 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'TouriscoBackend.settings')
 application = get_wsgi_application()
 
 
+app=application
