@@ -89,7 +89,7 @@ REST_FRAMEWORK = {
 
 # JWT configration
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=50),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
@@ -112,7 +112,7 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 
     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(days=10),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=7),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=50),
 }
 
@@ -165,13 +165,13 @@ WSGI_APPLICATION = 'TouriscoBackend.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         # 'NAME': env("DB_NAME"),
         # 'USER': env("DB_USER"),
         # 'PASSWORD': env("DB_PASSWORD"),
         # 'HOST': env("DB_HOST"),
         # 'PORT': env("DB_PORT"),
-        'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': 'django.db.backends.postgresql',
         'NAME': env('PGDATABASE'),
         'USER': env('PGUSER'),
         'PASSWORD': env('PGPASSWORD'),
