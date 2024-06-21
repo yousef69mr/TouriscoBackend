@@ -41,7 +41,7 @@ CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
-    os.environ.get('FRONTEND_URL','http://localhost:3000/')
+    os.environ.get('FRONTEND_URL','http://localhost:3000')
 ]
 
 # Domain
