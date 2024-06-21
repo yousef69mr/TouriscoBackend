@@ -145,7 +145,7 @@ class ChatbotView(APIView):
 def detect_intent_with_parameters(project_id, session_id, query_params, language_code, user_input):
     import random
     defination_responses = ["{title} is {defination}","Defination of {title} is {defination}"]
-    recommendation_responses = ["you should visit {places}","{places} should be your next destination"]
+    recommendation_responses = ["you should visit {places}","you should visit {places} {type}","{places} should be in your next {type}"]
     fallback_responses = ["Sorry, I couldn't find any {details} for {subject}."]
     session_client = dialogflow.SessionsClient()
     session = session_client.session_path(project_id, session_id)
@@ -247,7 +247,7 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
                         query_result.fulfillment_text = response_text
                         return response
                     else:
-                        response_text = random.choice(fallback_responses).format(details="details",subject=landmark.title)
+                        response_text = random.choice(fallback_responses).format(details="details",subject=object_title)
                         query_result.fulfillment_text = response_text
                         return response
                 
@@ -300,9 +300,30 @@ def detect_intent_with_parameters(project_id, session_id, query_params, language
 
         # return result
         if objects:
-            object_names = ', '.join([object.title for object in objects])
+            if isinstance(objects.first(), TourPackage):
+                object_names = ', '.join([str(object.title+'_'+str(object.id)) for object in objects])
+            else:
+                object_names = ', '.join([object.title for object in objects])
+            
             print(object_names)
-            response_text = random.choice(recommendation_responses).format(places=object_names)
+            if isinstance(objects.first(), TourPackage):
+                if len(objects)>0:
+                    objects_type = 'packages'
+                else:
+                    objects_type = 'package'
+
+            if isinstance(objects.first(), LandmarkLanguageBased):
+                if len(objects)>0:
+                    objects_type = 'landmarks'
+                else:
+                    objects_type = 'landmark'
+            else:
+                if len(objects)>0:
+                    objects_type = 'destinations'
+                else:
+                    objects_type = 'destination'
+
+            response_text = random.choice(recommendation_responses).format(places=object_names,type=objects_type)
             query_result.fulfillment_text = response_text
             return response
         else:

@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import dj_database_url
+# import dj_database_url
 from pathlib import Path
 import os
 from datetime import timedelta
@@ -41,6 +41,7 @@ CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
+    os.environ.get('FRONTEND_URL','http://')
 ]
 
 # Domain
@@ -164,20 +165,29 @@ WSGI_APPLICATION = 'TouriscoBackend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env("DB_NAME"),
-        'USER': env("DB_USER"),
-        'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': env("DB_NAME"),
+        # 'USER': env("DB_USER"),
+        # 'PASSWORD': env("DB_PASSWORD"),
+        # 'HOST': env("DB_HOST"),
+        # 'PORT': env("DB_PORT"),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': env('PGDATABASE'),
+        'USER': env('PGUSER'),
+        'PASSWORD': env('PGPASSWORD'),
+        'HOST': env('PGHOST'),
+        'PORT': env('PGPORT'),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
 
 
 # deploy postgres database to live server
-DATABASES = {
-    'default': dj_database_url.parse(env('DB_URL'))
-}
+# DATABASES = {
+#     'default': dj_database_url.parse(env('DB_URL'))
+# }
 
 
 
